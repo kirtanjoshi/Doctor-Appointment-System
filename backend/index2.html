@@ -160,13 +160,26 @@
 
         async function handleFetch(url, options) {
             try {
+                console.log("🔍 Fetching:", url, options);
                 const response = await fetch(url, options);
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.message || `Error ${response.status}`);
+                const contentType = response.headers.get("content-type");
+                let data;
+
+                if (contentType && contentType.includes("application/json")) {
+                    data = await response.json();
+                } else {
+                    data = await response.text(); // fallback for non-JSON error
                 }
+
+                console.log("✅ Response:", data);
+
+                if (!response.ok) {
+                    throw new Error(data.message || data || `Error ${response.status}`);
+                }
+
                 return data;
             } catch (error) {
+                console.error("❌ Fetch Error:", error);
                 throw error;
             }
         }
@@ -177,27 +190,28 @@
             const form = e.target;
             const formData = new FormData(form);
 
-            // Log form data for debugging
             for (let [key, value] of formData.entries()) {
-                console.log(`${key}: ${value}`);
+                console.log(`📝 ${key}: ${value}`);
             }
 
-            // Check if profile picture is selected
             const profilePic = form.querySelector('#profilePic').files[0];
             if (!profilePic) {
+                console.warn("⚠️ Profile picture missing");
                 showResponse('registerResponse', 'Please upload a profile picture', true);
                 return;
             }
 
             try {
-                formData.append('role', 'doctor');  // Append role to form data
+                formData.append('role', 'doctor');
                 const data = await handleFetch(`${API_BASE_URL}/register`, {
                     method: 'POST',
                     body: formData
                 });
+                console.log("✅ Registration successful:", data);
                 showResponse('registerResponse', data.message || 'Doctor registered successfully!');
                 form.reset();
             } catch (error) {
+                console.error("❌ Registration failed:", error);
                 showResponse('registerResponse', error.message || 'Failed to register doctor', true);
             }
         });
@@ -210,11 +224,13 @@
             const password = document.getElementById('loginPassword').value;
 
             if (!email || !password) {
+                console.warn("⚠️ Missing login credentials");
                 showResponse('loginResponse', 'Email and password are required', true);
                 return;
             }
 
             const payload = { email, password };
+            console.log("🔐 Login payload:", payload);
 
             try {
                 const data = await handleFetch(`${API_BASE_URL}/login`, {
@@ -223,9 +239,11 @@
                     body: JSON.stringify(payload)
                 });
 
+                console.log("✅ Login successful:", data);
                 showResponse('loginResponse', `Logged in: ${data.message}. Token: ${data.token} | Doctor ID: ${data.doctor?.id}`);
                 form.reset();
             } catch (error) {
+                console.error("❌ Login failed:", error);
                 showResponse('loginResponse', error.message || 'Login failed', true);
             }
         });
@@ -238,6 +256,7 @@
             const doctorId = formData.get('doctorId').trim();
 
             if (!doctorId) {
+                console.warn("⚠️ Doctor ID is missing");
                 showResponse('updateResponse', 'Doctor ID is required', true);
                 return;
             }
@@ -246,9 +265,12 @@
 
             const hasData = Array.from(formData.entries()).length > 0;
             if (!hasData) {
+                console.warn("⚠️ No update fields provided");
                 showResponse('updateResponse', 'No fields provided to update', true);
                 return;
             }
+
+            console.log(`🛠️ Updating doctor ${doctorId} with:`, Array.from(formData.entries()));
 
             try {
                 const data = await handleFetch(`${API_BASE_URL}/update/${doctorId}`, {
@@ -256,13 +278,16 @@
                     body: formData
                 });
 
+                console.log("✅ Update successful:", data);
                 showResponse('updateResponse', data.message || 'Doctor updated successfully');
                 form.reset();
             } catch (error) {
+                console.error("❌ Update failed:", error);
                 showResponse('updateResponse', error.message || 'Failed to update doctor', true);
             }
         });
     </script>
+
 </body>
 
 </html>
