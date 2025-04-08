@@ -27,7 +27,7 @@ const UserSchema = new Schema({
     role: { type: String, enum: ["patient"], required: true },
 
     phone: {
-        type: String,
+        type: Number,
         required: [true, 'Please add a phone number'],
         maxlength: [20, 'Phone number cannot be longer than 20 characters']
     },

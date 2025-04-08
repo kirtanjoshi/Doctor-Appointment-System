@@ -58,6 +58,8 @@ dotenv.config();
 
 const authRoutes = require('./src/routes/authroutes');
 const protectedRoutes = require('./src/routes/protectedRoutes');
+const doctorRoutes = require('./src/routes/doctor-routes');
+const bookAppointmentRoutes = require('./src/routes/appoinment-booking');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -82,6 +84,8 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/protected', protectedRoutes);
+app.use('/api/',doctorRoutes)
+app.use('/api/appointments',bookAppointmentRoutes)
 
 // Connect to MongoDB and start server
 const connectDB = async () => {

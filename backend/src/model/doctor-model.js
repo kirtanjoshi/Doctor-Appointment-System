@@ -13,14 +13,14 @@ const DoctorSchema = new Schema({
         default: "doctor"
     },
   
-    fee: { type: String, required: true },
+    fee: { type: Number, required: true },
     specialization: { type: String },
     qualifications: { type: String },
 
     availability: [{
         day: { type: String, required: true },
         timeSlot: [
-            { type: String, required: true }
+            { type: [String], required: true }
         ]
     }],
 
