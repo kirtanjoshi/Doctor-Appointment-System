@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
+const PatientSchema = new Schema({
 
-    id : { type: Schema.Types.ObjectId, ref: 'User' },
+    id : { type: Schema.Types.ObjectId },
     
     fullname: { type: String},
     
-    userName: {
+    patientName: {
         type: String,
         required: [true, 'Name is required'],
         unique: true
@@ -42,10 +42,10 @@ const UserSchema = new Schema({
     createdOn:{type: Date},
 });
 
-UserSchema.pre('save', function (next) {
+PatientSchema.pre('save', function (next) {
     this.updatedOn = new Date();
     this.createdOn = new Date();
     next();
 });
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("Patient", PatientSchema);

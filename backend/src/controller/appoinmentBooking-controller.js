@@ -15,7 +15,7 @@ const bookAppoinment = async (req, res) => {
             return res.status(404).json({ msg: 'Doctor not found' });
         }
 
-        if (!Patient) {
+        if (!patient) {
             return res.status(404).json({ msg: 'Patient not found' });
         }
 
