@@ -5,7 +5,7 @@ const PatientSchema = new Schema({
 
     id : { type: Schema.Types.ObjectId },
     
-    fullname: { type: String},
+    fullName: { type: String},
     
     patientName: {
         type: String,
@@ -21,13 +21,13 @@ const PatientSchema = new Schema({
     password: {
         type: String,
         required: [true, 'Password is required'],
-           unique: true
+         
     },
 
     role: { type: String, enum: ["patient"], required: true },
 
     phone: {
-        type: Number,
+        type: String,
         required: [true, 'Please add a phone number'],
         maxlength: [20, 'Phone number cannot be longer than 20 characters']
     },

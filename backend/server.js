@@ -70,7 +70,7 @@ app.use(express.json());
 
 // Enable CORS for local frontend development
 app.use(cors({
-  origin: ['http://127.0.0.1:5500', 'http://localhost:5500','http://localhost:5173'],
+  origin: ['http://127.0.0.1:5500', 'http://localhost:5173','http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -99,7 +99,7 @@ const connectDB = async () => {
     app.listen(port, () => {
       console.log(`🚀 Server running at http://localhost:${port}`);
     });
-  } catch (error) {
+  } catch (error) { 
     console.error('❌ MongoDB Connection Error:', error.message);
     process.exit(1);
   }
