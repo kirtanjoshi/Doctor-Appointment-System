@@ -48,7 +48,7 @@ const SignPatient = () => {
 
       if (res.ok) {
         alert("Registration successful!");
-        navigate("/auth/home");
+        navigate("/dashboard");
       } else {
         alert(`Registration failed: ${data.message || "Unknown error"}`);
       }

@@ -161,6 +161,23 @@ const updateDoctor = async (req, res) => {
     }
 };
 
+const getDoctorById = async (req, res) => {
+
+    try {
+        const { id } = req.params;
+        const doctorId = await DoctorModel.findById(id);
+         if (!doctorId) {
+            return res.status(404).json({ message: "Doctor not found" });
+        }
+
+        await res.status(200).json(doctorId);
+
+    }
+    catch (e) {
+         res.status(500).json({ message: 'Server error', error: error.message });
+    }
+}
+
 const deleteDoctor = async (req, res) => {
     try {
         const { id } = req.params;
@@ -177,4 +194,4 @@ const deleteDoctor = async (req, res) => {
     }
 };
 
-module.exports = { createDoctorAccount, loginDoctor, updateDoctor  , getAllDoctors};
+module.exports = { createDoctorAccount, loginDoctor, updateDoctor  , getAllDoctors , getDoctorById};

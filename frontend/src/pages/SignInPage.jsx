@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-// import medicare from "../assets/images/medicare.png";
+import medicare from "../assets/images/medicare.png";
 import google from "../assets/images/google.png";
 import apple from "../assets/images/apple.png";
 import { Link, useNavigate } from "react-router-dom";
 
-const AuthSign = () => {
+const SignInPage = () => {
   const [isLogin, setIsLogin] = useState(false);
 
   const [email, setEmail] = useState("");
@@ -13,63 +13,61 @@ const AuthSign = () => {
   // const [accountType, setAccountType] = useState("patient");
   const navigate = useNavigate();
 
-
-
   const handleLoginPatient = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:4000/api/auth/patient/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:4000/api/auth/patient/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        }
+      );
       const data = await response.json();
       console.log("Login successful:", data);
       // Store the token in local storage
       localStorage.setItem("token", data.token);
       // Redirect to the home page
-      navigate("/home");
-
-    }
-    catch (error) {
+      navigate("/dashboard");
+    } catch (error) {
       console.error("Login error:", error);
     }
   };
-  
 
-const handleLoginDoctor = async (e) => {
-  e.preventDefault();
+  const handleLoginDoctor = async (e) => {
+    e.preventDefault();
 
-  try {
-    const response = await fetch("http://localhost:4000/api/auth/doctor/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-    const data = await response.json();
-    console.log("Login successful:", data);
-    // Store the token in local storage
-    localStorage.setItem("token", data.token);
-    // Redirect to the home page
-    navigate("/home");
-
-  }
-  catch (error) {
-    console.error("Login error:", error);
-  }
-} 
-
+    try {
+      const response = await fetch(
+        "http://localhost:4000/api/auth/doctor/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log("Login successful:", data);
+      // Store the token in local storage
+      localStorage.setItem("token", data.token);
+      // Redirect to the home page
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
@@ -80,7 +78,6 @@ const handleLoginDoctor = async (e) => {
         <p className="text-sm text-[#8895A6] pt-6">
           Enter your credentials to sign to your account
         </p>
-
         <div className="bg-[#F1F5F9] mt-10 py-2 px-4  flex justify-between w-[512px] h-[50px] top-[124px] left-[464px] rounded-[4px] border">
           <button
             onClick={() => setIsLogin(true)}
@@ -100,8 +97,6 @@ const handleLoginDoctor = async (e) => {
           </button>
         </div>
 
-        
-        // Patient
         <div className="p-5 w-[507px]  mt-4 rounded-[10px] ">
           {isLogin ? (
             <>
@@ -126,8 +121,6 @@ const handleLoginDoctor = async (e) => {
 
                 <button
                   type="submit"
-                 
-
                   className="bg-[#FFA829] text-white w-full p-2  mt-3 rounded-[30px]"
                 >
                   Sign in
@@ -161,10 +154,9 @@ const handleLoginDoctor = async (e) => {
               </p>
             </>
           ) : (
-              <>
-                
-                // Doctor
-              <form onSubmit={handleLoginDoctor}> 
+            <>
+              // Doctor
+              <form onSubmit={handleLoginDoctor}>
                 <label className="font-bold text-[15px]">Email</label>
                 <input
                   type="email"
@@ -185,7 +177,7 @@ const handleLoginDoctor = async (e) => {
 
                 <button
                   type="submit"
-                  onClick={()=>navigate('/auth/home')}
+                  onClick={() => navigate("/auth/home")}
                   className="bg-[#FFA829] text-white w-full p-2  mt-3 rounded-[30px]"
                 >
                   Sign in
@@ -224,4 +216,4 @@ const handleLoginDoctor = async (e) => {
   );
 };
 
-export default AuthSign;
+export default SignInPage;

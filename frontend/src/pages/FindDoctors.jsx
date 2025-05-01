@@ -1,0 +1,145 @@
+import React, { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+
+// Inside FindDoctors component
+
+const FindDoctors = () => {
+  const [doctors, setDoctors] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [specialty, setSpecialty] = useState("");
+const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/doctors");
+        const data = await response.json();
+        setDoctors(Array.isArray(data) ? data : data.doctors);
+      } catch (error) {
+        console.error("Failed to fetch doctors:", error);
+        setDoctors([]);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
+  const filteredDoctors = useMemo(() => {
+    return doctors.filter((doctor) => {
+      const fullName = doctor.fullName?.toLowerCase() || "";
+      const specialization = doctor.specialization?.toLowerCase() || "";
+      const search = searchTerm.toLowerCase();
+      const selectedSpecialty = specialty.toLowerCase();
+
+      const matchesSearch =
+        fullName.includes(search) || specialization.includes(search);
+      const matchesSpecialty =
+        !specialty || specialization === selectedSpecialty;
+
+      return matchesSearch && matchesSpecialty;
+    });
+  }, [searchTerm, specialty, doctors]);
+
+  return (
+    <div className="p-6 max-w-screen-xl mx-auto">
+      <h2 className="text-3xl font-bold mb-4">Find a Doctor</h2>
+      <p className="text-gray-600 mb-6">
+        Find and book appointments with top doctors in your area
+      </p>
+
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <input
+          type="text"
+          placeholder="Search by doctor name or specialty..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border border-gray-300 p-3 rounded-md w-full md:w-2/3"
+        />
+        <select
+          value={specialty}
+          onChange={(e) => setSpecialty(e.target.value)}
+          className="border border-gray-300 p-3 rounded-md w-full md:w-1/3"
+        >
+          <option value="">Filter by Specialty</option>
+          {[...new Set(doctors.map((doc) => doc.specialization))].map(
+            (spec, idx) => (
+              <option key={idx} value={spec}>
+                {spec}
+              </option>
+            )
+          )}
+        </select>
+      </div>
+
+      {filteredDoctors.length === 0 ? (
+        <p>No doctors found.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredDoctors.map((doctor) => (
+            <div
+              key={doctor._id}
+              className="bg-teal-100 rounded-xl shadow-md overflow-hidden flex flex-col justify-between"
+            >
+              <div className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="bg-white text-center font-bold text-teal-800 rounded-full w-14 h-14 flex items-center justify-center text-lg shadow-sm">
+                    {doctor.fullName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">{doctor.fullName}</h3>
+                    <p className="text-teal-800 font-medium">
+                      {doctor.specialization}
+                    </p>
+                    <div className="flex items-center text-sm text-gray-600 mt-1">
+                      <svg
+                        className="w-4 h-4 mr-1 text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 2.75-2.88 7.19-5 9.88C9.88 16.19 7 11.75 7 9z" />
+                        <circle cx="12" cy="9" r="2.5" />
+                      </svg>
+                      {doctor.address || "N/A"}
+                    </div>
+                  </div>
+                  <div className="ml-auto text-sm text-green-600 font-semibold">
+                    ⭐ {doctor.rating || "4.9"}
+                  </div>
+                </div>
+                <div className="text-sm text-gray-700 space-y-1">
+                  <p>🗓 {doctor.experience}+ years experience</p>
+                  <p>🎓 {doctor.qualifications}</p>
+                </div>
+                <div className="mt-4 flex gap-2">
+                  <span className="bg-teal-200 text-sm text-teal-800 px-2 py-1 rounded-full">
+                    Next available: Today
+                  </span>
+                  <span className="bg-teal-200 text-sm text-teal-800 px-2 py-1 rounded-full">
+                    Online consult
+                  </span>
+                </div>
+              </div>
+              <div className="border-t border-teal-200 p-4 flex justify-between items-center bg-white">
+                <p className="text-gray-800 font-semibold">
+                  ₹{doctor.fee} per visit
+                </p>
+                <button
+                  className="bg-orange-400 text-white px-4 py-2 rounded-full hover:bg-orange-500 transition"
+                  onClick={() => navigate(`/doctors/${doctor._id}`)}
+                >
+                  Book Now
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FindDoctors;
