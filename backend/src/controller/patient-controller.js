@@ -70,6 +70,17 @@ const loginPatient =async (req, res) => {
     }
 };
 
+const getAllPatients = async (req, res) => {
+    try {
+        const patients = await PatientModel.find();
+        res.status(200).json(patients);
+
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
 
 const updatePatient = (req, res) => {
     try {
@@ -80,4 +91,4 @@ const updatePatient = (req, res) => {
     }
 }
 
-module.exports = { createPatient, loginPatient };
+module.exports = { createPatient, loginPatient,getAllPatients };

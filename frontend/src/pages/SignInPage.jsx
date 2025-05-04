@@ -155,7 +155,7 @@ const SignInPage = () => {
             </>
           ) : (
             <>
-              // Doctor
+             
               <form onSubmit={handleLoginDoctor}>
                 <label className="font-bold text-[15px]">Email</label>
                 <input

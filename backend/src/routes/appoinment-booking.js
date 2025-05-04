@@ -5,9 +5,12 @@ const authMiddleware = require('../middleware/authmiddleware');
 
 // Route to book an appointment
 router.post('/book', authMiddleware, controller.bookAppoinment);
+router.get('/',  controller.getPatientAppointments);
 
 // Route to cancel an appointment
 router.post('/cancel', authMiddleware, controller.cancelAppointment);
+
+router.get('/:id',  controller.getPatientAppointmentsById);
 
 // Route to reschedule an appointment
 router.post('/reschedule', authMiddleware, controller.rescheduleAppointment);

@@ -66,7 +66,7 @@ const SignPatient = () => {
           Fill in your details to register a new account
         </p>
         <form onSubmit={handleRegister}>
-          <h5 className="mb-1">Account Type: Patient</h5>
+          <h5 className="mb-1 ">Account Type: Patient</h5>
 
           <label>Full Name</label>
           <input

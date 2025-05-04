@@ -126,8 +126,30 @@ const rescheduleAppointment = async (req, res) => {
     }
 };
 
+const getPatientAppointmentsById = async (req, res) => {
+    try {
+
+        const {id} = req.params;
+        // Find all bookings for the patient
+        // const bookings = await BookingModel.findById(id).populate('doctorId');
+        const bookings = await BookingModel.findById(id);
+
+        if (!bookings || bookings.length === 0) {
+            return res.status(404).json({ msg: 'No bookings found for this patient' });
+        }
+
+        res.status(200).json(bookings);
+    } catch (error) {
+        console.error("Error fetching bookings:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+
 const getPatientAppointments = async (req, res) => {
     try {
+
 
         // Find all bookings for the patient
         const bookings = await BookingModel.find();
@@ -142,10 +164,10 @@ const getPatientAppointments = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
 module.exports = {
     bookAppoinment,
     cancelAppointment,
     rescheduleAppointment,
+    getPatientAppointmentsById,
     getPatientAppointments
 };

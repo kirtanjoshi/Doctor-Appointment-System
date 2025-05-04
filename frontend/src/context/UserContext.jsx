@@ -13,40 +13,75 @@ const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
     
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
   useEffect(() => {
+    // const fetchData = async () => {
+    //   const token = localStorage.getItem("token");
+    //   if (!token) {
+    //     // navigate("/login");
+    //     return;
+    //   }
+    //   try {
+    //     const response = await fetch(
+    //       "http://localhost:4000/api/protected/dashboard",
+    //       {
+    //         method: "GET",
+    //         headers: {
+    //           "Content-Type": "application/json",
+    //           Authorization: `Bearer ${token}`,
+    //         },
+    //       }
+    //     );
+    //     const data = await response.json();
+    //     console.log("Dashboard data:", data);
+
+    //     if (response.ok) {
+    //       setUser(data);
+    //       console.log("User", user);
+    //     } else {
+    //       alert(data.message || "Failed to fetch dashboard data.");
+    //     }
+    //   } catch (err) {
+    //     console.error("Error:", err);
+    //     alert("Something went wrong.");
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+
+
     const fetchData = async () => {
       const token = localStorage.getItem("token");
+
       if (!token) {
-        navigate("/login");
+        console.warn("No token found — skipping protected fetch");
         return;
       }
-      try {
-        const response = await fetch(
-          "http://localhost:4000/api/protected/dashboard",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
-        console.log("Dashboard data:", data);
 
-        if (response.ok) {
-          setUser(data);
-          console.log("User", user);
-        } else {
-          alert(data.message || "Failed to fetch dashboard data.");
-        }
-      } catch (err) {
-        console.error("Error:", err);
-        alert("Something went wrong.");
-      } finally {
-        setLoading(false);
+    try {
+          const response = await fetch(
+            "http://localhost:4000/api/protected/dashboard",
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+      if (response.status === 401) {
+        console.error("Unauthorized — maybe token expired or invalid");
+        return;
       }
+
+      const data = await response.json();
+      setUser(data);
+    } catch (err) {
+      console.error("Fetch failed:", err);
+    } finally {
+      setLoading(false);
+    }
     };
 
     fetchData();

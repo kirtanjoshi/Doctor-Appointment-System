@@ -15,13 +15,17 @@ import { useUser } from "../context/UserContext";
 
 const Sidebar = () => {
   const menuItems = [
-    { path: '/', name: 'Dashboard', icon: HomeIcon },
-    { path: '/appointments', name: 'Appointments', icon: CalendarIcon },
-    { path: '/medical-records', name: 'Medical Records', icon: DocumentTextIcon },
-    { path: '/messages', name: 'Messages', icon: ChatBubbleLeftIcon },
-    { path: '/find-doctors', name: 'Find Doctors', icon: UserGroupIcon },
-    { path: '/profile', name: 'Profile', icon: UserIcon },
-    { path: '/settings', name: 'Settings', icon: Cog6ToothIcon },
+    { path: "/", name: "Dashboard", icon: HomeIcon },
+    { path: "/appointments/:id", name: "Appointments", icon: CalendarIcon },
+    {
+      path: "/medical-records",
+      name: "Medical Records",
+      icon: DocumentTextIcon,
+    },
+    { path: "/messages", name: "Messages", icon: ChatBubbleLeftIcon },
+    { path: "/find-doctors", name: "Find Doctors", icon: UserGroupIcon },
+    { path: "/profile", name: "Profile", icon: UserIcon },
+    { path: "/settings", name: "Settings", icon: Cog6ToothIcon },
   ];
 const {user } = useUser();
 

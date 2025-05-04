@@ -25,6 +25,15 @@ const BookingSchema = new Schema({
     enum: ['Pending', 'Approved', 'Rejected'],
     default: 'Pending'
   },
+  visitType: {
+    type: String,
+    required: false
+  },
+  reasonForVisit:
+  { 
+    type: String,
+    required: false 
+    },
   createdAt: {
     type: Date,
     default: Date.now
