@@ -96,13 +96,106 @@ const getAllPatients = async (req, res) => {
 }
 
 
-const updatePatient = (req, res) => {
+// const updatePatient = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//          const { profilePic, email, fullName, patientName, phone, gender, password, role } = req.body;
+
+//         let imageUrl;
+//         if (req.file) {
+//             const filePath = req.file.path;
+//             const result = await uploadCloudinary(filePath, {
+//                 folder: 'patients',
+//             });
+//             imageUrl = result.secure_url;
+//             await fs.unlink(filePath);
+//         }
+
+//         const updateData = {
+//              profilePic:imageUrl,
+//              fullName,
+//              patientName,
+//              email,
+//              password: hashedPassword,
+//              phone,
+//              gender,
+//         };
+
+//         if (imageUrl) {
+//             updateData.profilePic = imageUrl;
+//         }
+
+//         const updatedPatient = await PatientModel.findByIdAndUpdate(id, updateData, { new: true });
+
+//         if (!updatedPatient) {
+//             return res.status(404).json({ msg: 'Patient not found' });
+//         }
+
+//         res.status(200).json({ msg: 'Patient updated successfully', patient: updatedPatient });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// };
+
+const updatePatient = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { profilePic, email, fullName, patientName, phone, gender, password, role } = req.body;
+
+    let imageUrl;
+    if (req.file) {
+      const filePath = req.file.path;
+      const result = await uploadCloudinary(filePath, {
+        folder: 'patients',
+      });
+      imageUrl = result.secure_url;
+      await fs.unlink(filePath); // Delete temp file
+    }
+
+    // Build update data conditionally
+    const updateData = {};
+    if (imageUrl) updateData.profilePic = imageUrl;
+    if (fullName) updateData.fullName = fullName;
+    if (patientName) updateData.patientName = patientName;
+    if (email) updateData.email = email;
+    if (phone) updateData.phone = phone;
+    if (gender) updateData.gender = gender;
+    if (role) updateData.role = role;
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+
+    const updatedPatient = await PatientModel.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    if (!updatedPatient) {
+      return res.status(404).json({ msg: 'Patient not found' });
+    }
+
+    res.status(200).json({ msg: 'Patient updated successfully', patient: updatedPatient });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+
+const deletePatient = async (req, res) => {
     try {
-        
+        const { id } = req.params;
+    const deletePatient = await PatientModel.findByIdAndDelete(id);
+    if (!deletePatient) {
+        return res.status(404).json({ msg: 'Patient not found' });
+    }
+    res.status(200).json({ msg: 'Patient deleted successfully' });
     }
     catch (error) {
-        
+        res.status(500).json({ error: error.message });
     }
 }
 
-module.exports = { createPatient, loginPatient,getAllPatients };
+module.exports = { createPatient, loginPatient,getAllPatients ,updatePatient};

@@ -1,7 +1,7 @@
 const BookingModel = require('../model/appoinmentBooking-model');
 const Patient = require('../model/patient-model');
 const Doctor = require('../model/doctor-model');
-
+const mongoose = require('mongoose');
 const bookAppoinment = async (req, res) => {
     try {
         const { doctorId, appointmentDate, appointmentTime, status } = req.body;
@@ -125,14 +125,13 @@ const rescheduleAppointment = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
 const getPatientAppointmentsById = async (req, res) => {
     try {
+        const { patientId } = req.params;
 
-        const {id} = req.params;
-        // Find all bookings for the patient
-        // const bookings = await BookingModel.findById(id).populate('doctorId');
-        const bookings = await BookingModel.findById(id);
+        const bookings = await BookingModel.find({
+            patientId
+        }).populate('doctorId').populate('patientId');
 
         if (!bookings || bookings.length === 0) {
             return res.status(404).json({ msg: 'No bookings found for this patient' });

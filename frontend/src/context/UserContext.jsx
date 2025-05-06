@@ -12,7 +12,7 @@ const UserProvider = ({ children }) => {
   const fetchUser = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-        alert("Failed to fetch user data. Please log in again.");
+        // alert("Failed to fetch user data. Please log in again.");
       setLoading(false);
       return;
     }
@@ -30,14 +30,14 @@ const UserProvider = ({ children }) => {
 
       if (response.status === 401) {
         console.error("Unauthorized");
-       alert("Failed to fetch user data. Please log in again.");
+      //  alert("Failed to fetch user data. Please log in again.");
         return;
       }
 
       const data = await response.json();
       setUser(data);
     } catch (error) {
-      alert("Failed to fetch user data. Please log in again.", error);
+      // alert("Failed to fetch user data. Please log in again.", error);
       console.error("Fetch failed:", error);
     } finally {
       setLoading(false);

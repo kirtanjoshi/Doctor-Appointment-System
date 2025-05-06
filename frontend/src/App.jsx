@@ -8,6 +8,8 @@ import SignUpPage from "./pages/SignUpPage";
 import DoctorDetails from "./pages/DoctorDetails";
 import UserProvider from "./context/UserContext";
 import AppointmentBooking from "./pages/AppointmentBooking";
+import Settings from "./pages/Setting";
+
 
 
 function App() {
@@ -18,7 +20,7 @@ function App() {
           {/* Public Route without Sidebar */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/auth/signUp" element={<SignUpPage />} />\
+          <Route path="/auth/signUp" element={<SignUpPage />} />
           <Route path="/doctors/:id" element={<AppointmentBooking />} />
           {/* Protected Routes with Sidebar and Layout */}
           <Route
@@ -30,10 +32,7 @@ function App() {
                   <Routes>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="find-doctors" element={<FindDoctors />} />
-                    <Route
-                      path="appointments"
-                      element={<div className="p-8">Appointments Content</div>}
-                    />
+                    <Route path="appointments" element={<div>Loading</div>} />
                     <Route
                       path="medical-records"
                       element={
@@ -48,10 +47,7 @@ function App() {
                       path="profile"
                       element={<div className="p-8">Profile Content</div>}
                     />
-                    <Route
-                      path="settings"
-                      element={<div className="p-8">Settings Content</div>}
-                    />
+                    <Route path="settings" element={<Settings />} />
                     <Route
                       path="/appointments/:id"
                       element={<AppointmentBooking />}

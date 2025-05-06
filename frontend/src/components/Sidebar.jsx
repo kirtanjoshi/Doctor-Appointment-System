@@ -16,7 +16,7 @@ import { AuthContext } from "../context/UserContext";
 const Sidebar =  () => {
   const menuItems = [
     { path: "/dashboard", name: "Dashboard", icon: HomeIcon },
-    { path: "/appointments/:id", name: "Appointments", icon: CalendarIcon },
+    { path: "/appointments", name: "Appointments", icon: CalendarIcon },
     {
       path: "/medical-records",
       name: "Medical Records",
