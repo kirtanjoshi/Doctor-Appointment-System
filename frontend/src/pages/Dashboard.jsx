@@ -1,7 +1,7 @@
 // Dashboard.jsx
 import React, { useState } from "react";
 
-import { useUser } from "../context/UserContext";
+import { AuthContext } from "../context/UserContext";
 import {
   CalendarIcon,
   DocumentTextIcon,
@@ -19,7 +19,7 @@ import RecentRecords from "../components/RecentRecords";
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("appointments");
   const navigate = useNavigate();
- const { user, loading } = useUser();
+ const { user, loading } = AuthContext();
 
 
   const stats = [

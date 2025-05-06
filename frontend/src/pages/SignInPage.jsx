@@ -1,45 +1,47 @@
 import React, { useState } from "react";
-import medicare from "../assets/images/medicare.png";
+// import medicare from "../assets/images/medicare.png";
 import google from "../assets/images/google.png";
 import apple from "../assets/images/apple.png";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/UserContext";
 
 const SignInPage = () => {
   const [isLogin, setIsLogin] = useState(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  
 
   // const [accountType, setAccountType] = useState("patient");
   const navigate = useNavigate();
 
-  const handleLoginPatient = async (e) => {
-    e.preventDefault();
 
-    try {
-      const response = await fetch(
-        "http://localhost:4000/api/auth/patient/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        }
-      );
-      const data = await response.json();
-      console.log("Login successful:", data);
-      // Store the token in local storage
-      localStorage.setItem("token", data.token);
-      // Redirect to the home page
+const { loginUser } = AuthContext();
+const handleLoginPatient = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch("http://localhost:4000/api/auth/patient/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (data.token) {
+      await loginUser(data.token); // fetch and set user
       navigate("/dashboard");
-    } catch (error) {
-      console.error("Login error:", error);
     }
-  };
+  } catch (error) {
+    console.error("Login error:", error);
+  }
+};
+
+
+
 
   const handleLoginDoctor = async (e) => {
     e.preventDefault();
@@ -62,6 +64,7 @@ const SignInPage = () => {
       console.log("Login successful:", data);
       // Store the token in local storage
       localStorage.setItem("token", data.token);
+      console.log("send", data.token);
       // Redirect to the home page
       navigate("/dashboard");
     } catch (error) {
@@ -121,6 +124,7 @@ const SignInPage = () => {
 
                 <button
                   type="submit"
+              
                   className="bg-[#FFA829] text-white w-full p-2  mt-3 rounded-[30px]"
                 >
                   Sign in
@@ -205,7 +209,7 @@ const SignInPage = () => {
                   className="cursor-pointer hover:text-blue-400"
                   onClick={() => setIsLogin(false)}
                 >
-                  <Link to="/auth/signDoctor"> Register here</Link>
+                  <Link to="/auth/signUp"> Register here</Link>
                 </span>
               </p>
             </>

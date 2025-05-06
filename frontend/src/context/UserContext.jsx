@@ -1,93 +1,56 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-// Create a Context
+
+// Create and export context hook
 const UserContext = createContext();
-
-import { useNavigate } from "react-router-dom";
-
-// Custom Hook to access User Context
-export const useUser = () => useContext(UserContext);
-
+export const useAuth = () => useContext(UserContext);
 
 const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-    
-    // const navigate = useNavigate();
-  useEffect(() => {
-    // const fetchData = async () => {
-    //   const token = localStorage.getItem("token");
-    //   if (!token) {
-    //     // navigate("/login");
-    //     return;
-    //   }
-    //   try {
-    //     const response = await fetch(
-    //       "http://localhost:4000/api/protected/dashboard",
-    //       {
-    //         method: "GET",
-    //         headers: {
-    //           "Content-Type": "application/json",
-    //           Authorization: `Bearer ${token}`,
-    //         },
-    //       }
-    //     );
-    //     const data = await response.json();
-    //     console.log("Dashboard data:", data);
-
-    //     if (response.ok) {
-    //       setUser(data);
-    //       console.log("User", user);
-    //     } else {
-    //       alert(data.message || "Failed to fetch dashboard data.");
-    //     }
-    //   } catch (err) {
-    //     console.error("Error:", err);
-    //     alert("Something went wrong.");
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
-
-
-    const fetchData = async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        console.warn("No token found — skipping protected fetch");
-        return;
-      }
+  // Fetch user info from protected route
+  const fetchUser = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
     try {
-          const response = await fetch(
-            "http://localhost:4000/api/protected/dashboard",
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+      const res = await fetch("http://localhost:4000/api/protected/dashboard", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      if (response.status === 401) {
-        console.error("Unauthorized — maybe token expired or invalid");
+      if (res.status === 401) {
+        console.warn("Unauthorized: Token invalid or expired.");
         return;
       }
 
-      const data = await response.json();
+      const data = await res.json();
       setUser(data);
     } catch (err) {
-      console.error("Fetch failed:", err);
+      console.error("Error fetching user:", err);
     } finally {
       setLoading(false);
     }
-    };
+  };
 
-    fetchData();
+  // Run once on mount to check for token
+  useEffect(() => {
+    fetchUser();
   }, []);
+
+  // Called after successful login
+  const loginUser = async (token) => {
+    localStorage.setItem("token", token);
+    await fetchUser();
+  };
+
   return (
-    <UserContext.Provider value={{ user, loading }}>
+    <UserContext.Provider value={{ user, loading, loginUser, setUser }}>
       {children}
     </UserContext.Provider>
   );

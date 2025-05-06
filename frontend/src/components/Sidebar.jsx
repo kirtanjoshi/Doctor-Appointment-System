@@ -11,11 +11,11 @@ import {
 } from '@heroicons/react/24/outline';
 
 
-import { useUser } from "../context/UserContext";
+import { AuthContext } from "../context/UserContext";
 
-const Sidebar = () => {
+const Sidebar =  () => {
   const menuItems = [
-    { path: "/", name: "Dashboard", icon: HomeIcon },
+    { path: "/dashboard", name: "Dashboard", icon: HomeIcon },
     { path: "/appointments/:id", name: "Appointments", icon: CalendarIcon },
     {
       path: "/medical-records",
@@ -27,12 +27,17 @@ const Sidebar = () => {
     { path: "/profile", name: "Profile", icon: UserIcon },
     { path: "/settings", name: "Settings", icon: Cog6ToothIcon },
   ];
-const {user } = useUser();
+  const { user, loading } = AuthContext();
 
   const handleLogout = () => {
     // Add logout logic here
-    console.log('Logging out...');
+    console.log("Logging out...");
   };
+
+  console.log("User", user);
+
+  if (loading) return <div className="p-4">Loading...</div>;
+  if (!user) return <div className="p-4">No user data found.</div>;
 
   return (
     <div className="w-64 fixed left-0 top-0 h-screen bg-white shadow-lg flex flex-col">

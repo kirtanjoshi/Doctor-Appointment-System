@@ -17,7 +17,7 @@ function App() {
           {/* Public Route without Sidebar */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signUp" element={<SignUpPage />} />\
+          <Route path="/auth/signUp" element={<SignUpPage />} />\
           <Route path="/doctors/:id" element={<AppointmentBooking />} />
           {/* Protected Routes with Sidebar and Layout */}
           <Route

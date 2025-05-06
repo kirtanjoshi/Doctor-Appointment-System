@@ -13,7 +13,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 
-import { useUser } from "../context/UserContext";
+import { AuthContext } from "../context/UserContext";
 
 const AppointmentBooking = () => {
   const { id } = useParams();
@@ -25,7 +25,7 @@ const AppointmentBooking = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date(2025, 2)); // Start with March 2025
 
-  const { user } = useUser();
+  const { user } = AuthContext();
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -388,15 +388,7 @@ const bookAppointment = async () => {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center">
-                <CreditCardIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 mr-2 sm:mr-3" />
-                <div>
-                  <p className="text-xs sm:text-sm text-gray-600">Payment</p>
-                  <p className="font-medium text-gray-800 text-xs sm:text-sm">
-                    Self Pay
-                  </p>
-                </div>
-              </div>
+             
             </div>
             <button
               onClick={handleConfirmBooking}
