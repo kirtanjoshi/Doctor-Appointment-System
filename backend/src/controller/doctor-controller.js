@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const DoctorModel = require("../model/doctor-model");
-const { uploadCloudinary } = require('../utils/cloudinary'); // ✅ FIXED
+const { uploadCloudinary } = require('../utils/cloudinary');
 const fs = require('fs').promises;
 require('dotenv').config();
 
@@ -17,14 +17,6 @@ const createDoctorAccount = async (req, res) => {
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-
-           // Parse availability (from string to object)
-    // let parsedAvailability;
-    // try {
-    //   parsedAvailability = JSON.parse(availability);
-    // } catch (err) {
-    //   return res.status(400).json({ message: "Invalid availability format" });
-    // }
 
         let parsedAvailability = availability;
 if (typeof availability === 'string') {

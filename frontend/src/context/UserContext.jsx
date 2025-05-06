@@ -1,59 +1,65 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-
-// Create and export context hook
 const UserContext = createContext();
-export const useAuth = () => useContext(UserContext);
+
+export const AuthContext  = () => useContext(UserContext);
+
+
 
 const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch user info from protected route
   const fetchUser = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
+        alert("Failed to fetch user data. Please log in again.");
       setLoading(false);
       return;
     }
 
     try {
-      const res = await fetch("http://localhost:4000/api/protected/dashboard", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        "http://localhost:4000/api/protected/dashboard",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (res.status === 401) {
-        console.warn("Unauthorized: Token invalid or expired.");
+      if (response.status === 401) {
+        console.error("Unauthorized");
+       alert("Failed to fetch user data. Please log in again.");
         return;
       }
 
-      const data = await res.json();
+      const data = await response.json();
       setUser(data);
-    } catch (err) {
-      console.error("Error fetching user:", err);
+    } catch (error) {
+      alert("Failed to fetch user data. Please log in again.", error);
+      console.error("Fetch failed:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Run once on mount to check for token
   useEffect(() => {
     fetchUser();
   }, []);
 
-  // Called after successful login
   const loginUser = async (token) => {
     localStorage.setItem("token", token);
-    await fetchUser();
+    await fetchUser(); // fetch and set user data
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, loginUser, setUser }}>
+    <UserContext.Provider value={{ user, loading, setUser, loginUser }}>
       {children}
     </UserContext.Provider>
   );
 };
 
+
 export default UserProvider;
+

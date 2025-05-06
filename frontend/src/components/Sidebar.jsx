@@ -66,10 +66,13 @@ const Sidebar =  () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
-              <span className="text-primary font-medium">KJ</span>
+              <img
+                className="text-primary font-medium"
+                src={user.patient.profilePic}
+              ></img>
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium">| {user.patient.fullName}</p>
+              <p className="text-sm font-medium">{user.patient.fullName}</p>
               <p className="text-xs text-gray-500">{user.patient.email}</p>
             </div>
           </div>

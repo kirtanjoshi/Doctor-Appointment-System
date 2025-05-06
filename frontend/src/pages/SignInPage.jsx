@@ -1,219 +1,118 @@
+
+
 import React, { useState } from "react";
-// import medicare from "../assets/images/medicare.png";
-import google from "../assets/images/google.png";
-import apple from "../assets/images/apple.png";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/UserContext";
 
 const SignInPage = () => {
-  const [isLogin, setIsLogin] = useState(false);
-
+  const [accountType, setAccountType] = useState("patient"); // patient | doctor | admin
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
-
-  // const [accountType, setAccountType] = useState("patient");
   const navigate = useNavigate();
+  const { loginUser } = AuthContext(); // useContext instead of function call
 
-
-const { loginUser } = AuthContext();
-const handleLoginPatient = async (e) => {
-  e.preventDefault();
-
-  try {
-    const response = await fetch("http://localhost:4000/api/auth/patient/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-
-    if (data.token) {
-      await loginUser(data.token); // fetch and set user
-      navigate("/dashboard");
-    }
-  } catch (error) {
-    console.error("Login error:", error);
-  }
-};
-
-
-
-
-  const handleLoginDoctor = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    let endpoint = "";
+
+    if (accountType === "patient") {
+      endpoint = "http://localhost:4000/api/auth/patient/login";
+    } else if (accountType === "doctor") {
+      endpoint = "http://localhost:4000/api/auth/doctor/login";
+    } else if (accountType === "admin") {
+      endpoint = "http://localhost:4000/api/auth/admin/login";
+    }
 
     try {
-      const response = await fetch(
-        "http://localhost:4000/api/auth/doctor/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        }
-      );
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
       const data = await response.json();
-      console.log("Login successful:", data);
-      // Store the token in local storage
-      localStorage.setItem("token", data.token);
-      console.log("send", data.token);
-      // Redirect to the home page
-      navigate("/dashboard");
+
+      if (data.token) {
+        await loginUser(data.token);
+        navigate("/dashboard");
+      } else {
+        console.error("Invalid login response:", data);
+      }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error(`${accountType} login error:`, error);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="flex flex-col items-center mx-auto p-5  text-[#3D3743] border">
+      <div className="flex flex-col items-center mx-auto p-5 text-[#3D3743] border">
         <h1 className="text-center font-bold flex gap-3 text-[24px] font-Archivo">
           Welcome Back
         </h1>
         <p className="text-sm text-[#8895A6] pt-6">
-          Enter your credentials to sign to your account
+          Enter your credentials to sign in to your account
         </p>
-        <div className="bg-[#F1F5F9] mt-10 py-2 px-4  flex justify-between w-[512px] h-[50px] top-[124px] left-[464px] rounded-[4px] border">
-          <button
-            onClick={() => setIsLogin(true)}
-            className={`${
-              isLogin ? "bg-[#CBF3F0]" : "bg-[#F1F5F9]"
-            } text-[#222E40]  left-[277px] rounded-[16px] h-[36px] w-[217px] top-[5px] p-2 `}
-          >
-            Patient
-          </button>
-          <button
-            onClick={() => setIsLogin(false)}
-            className={`${
-              !isLogin ? "bg-[#CBF3F0]" : "bg-[#F1F5F9]"
-            } text-[#222E40]  left-[277px] rounded-[16px] h-[36px] w-[217px] top-[7px] p-2 `}
-          >
-            Doctor
-          </button>
+
+        {/* Account type toggle */}
+        <div className="bg-[#F1F5F9] mt-10 py-2 px-4 flex justify-between w-[512px] h-[50px] rounded-[4px] border">
+          {["patient", "doctor", "admin"].map((type) => (
+            <button
+              key={type}
+              onClick={() => setAccountType(type)}
+              className={`${
+                accountType === type ? "bg-[#CBF3F0]" : "bg-[#F1F5F9]"
+              } text-[#222E40] rounded-[16px] h-[36px] w-[160px] p-2 font-semibold`}
+            >
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </button>
+          ))}
         </div>
 
-        <div className="p-5 w-[507px]  mt-4 rounded-[10px] ">
-          {isLogin ? (
-            <>
-              <form onSubmit={handleLoginPatient}>
-                <label className="font-bold text-[15px]">Email</label>
-                <input
-                  type="email"
-                  className="w-full p-3 border mt-1 bg-[#E8F0FE] mb-6 rounded-[6px]"
-                  placeholder="abc@gmail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
+        {/* Login Form */}
+        <div className="p-5 w-[507px] mt-4 rounded-[10px]">
+          <form onSubmit={handleLogin}>
+            <label className="font-bold text-[15px]">Email</label>
+            <input
+              type="email"
+              className="w-full p-3 border mt-1 bg-[#E8F0FE] mb-6 rounded-[6px]"
+              placeholder="yourname@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-                <label className="font-bold  text-[15px]">Password</label>
-                <input
-                  type="password"
-                  className="w-full p-3 bg-[#E8F0FE] rounded-[6px] border mt-1 mb-3"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+            <label className="font-bold text-[15px]">Password</label>
+            <input
+              type="password"
+              className="w-full p-3 bg-[#E8F0FE] rounded-[6px] border mt-1 mb-3"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-                <button
-                  type="submit"
-              
-                  className="bg-[#FFA829] text-white w-full p-2  mt-3 rounded-[30px]"
-                >
-                  Sign in
-                </button>
-              </form>
-              <div>
-                <h1 className="text-center mt-10 text-[#8B95AC]">
-                  OR CONTINUE WITH
-                </h1>
+            <button
+              type="submit"
+              className="bg-[#FFA829] text-white w-full p-2 mt-3 rounded-[30px]"
+            >
+              Sign in
+            </button>
+          </form>
 
-                <div className="flex justify-between mt-6 gap-3  w-full ">
-                  <button className="border text-center w-1/2 items-center flex flex-row gap-4 border-[#D5F3F0] p-2 rounded-[10px] ">
-                    <img src={google} alt="" className="h-[22px]" />
-                    Google
-                  </button>
-                  <button className="border w-1/2 flex flex-row gap-4 rounded-[10px] p-2  items-center border-[#D5F3F0]">
-                    <img src={apple} alt="" className="h-[20px]" />
-                    Apple
-                  </button>
-                </div>
-              </div>
-              <p className="mt-2 text-[#2F5760] text-center">
-                Don't have an account?{" "}
-                <Link
-                  to="/auth/signPatient"
-                  className="cursor-pointer hover:text-blue-400"
-                  onClick={() => setIsLogin(false)}
-                >
-                  Register Now
-                </Link>
-              </p>
-            </>
-          ) : (
-            <>
-             
-              <form onSubmit={handleLoginDoctor}>
-                <label className="font-bold text-[15px]">Email</label>
-                <input
-                  type="email"
-                  className="w-full p-3 border mt-1 bg-[#E8F0FE] mb-6 rounded-[6px]"
-                  placeholder="kritan@gmail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-
-                <label className="font-bold  text-[15px]">Password</label>
-                <input
-                  type="password"
-                  className="w-full p-3 bg-[#E8F0FE] rounded-[6px] border mt-1 mb-3"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-
-                <button
-                  type="submit"
-                  onClick={() => navigate("/auth/home")}
-                  className="bg-[#FFA829] text-white w-full p-2  mt-3 rounded-[30px]"
-                >
-                  Sign in
-                </button>
-              </form>
-              <div>
-                <h1 className="text-center mt-10 text-[#8B95AC]">
-                  OR CONTINUE WITH
-                </h1>
-
-                <div className="flex justify-between mt-6 gap-3  w-full ">
-                  <button className="border text-center w-1/2 items-center flex flex-row gap-4 border-[#D5F3F0] p-2 rounded-[10px] ">
-                    <img src={google} alt="" className="h-[22px]" />
-                    Google
-                  </button>
-                  <button className="border w-1/2 flex flex-row gap-4 rounded-[10px] p-2  items-center border-[#D5F3F0]">
-                    <img src={apple} alt="" className="h-[20px]" />
-                    Apple
-                  </button>
-                </div>
-              </div>
-              <p className="mt-2 text-[#2F5760] text-center">
-                Don't have an account?{" "}
-                <span
-                  className="cursor-pointer hover:text-blue-400"
-                  onClick={() => setIsLogin(false)}
-                >
-                  <Link to="/auth/signUp"> Register here</Link>
-                </span>
-              </p>
-            </>
-          )}
+          {/* Redirect links */}
+          <p className="mt-5 text-[#2F5760] text-center">
+            Don't have an account?{" "}
+            {accountType === "patient" ? (
+              <Link
+                to="/auth/signUp"
+                className="cursor-pointer hover:text-blue-400"
+              >
+                Register Now
+              </Link>
+            ) : accountType === "doctor" ? (
+              <span className="text-gray-400">(Admin access only)</span>
+            ) : (
+              <span className="text-gray-400">(Admin access only)</span>
+            )}
+          </p>
         </div>
       </div>
     </div>

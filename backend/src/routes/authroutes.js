@@ -4,7 +4,7 @@ const { createPatient, loginPatient } = require('../controller/patient-controlle
 const { createDoctorAccount, loginDoctor, updateDoctor } = require('../controller/doctor-controller');
 const upload = require('../middleware/multer-middleware')
 
-route.post('/patient/register', createPatient);
+route.post('/patient/register', upload.single('profilePic'), createPatient);
 route.post('/patient/login', loginPatient);
 
 // Routes

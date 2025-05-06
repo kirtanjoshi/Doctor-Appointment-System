@@ -2,21 +2,39 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const PatientModel = require('../model/patient-model');
 const dotenv = require('dotenv');
+
+const { uploadCloudinary } = require('../utils/cloudinary');
+const fs = require('fs').promises;
 dotenv.config();
 
 const createPatient = async (req, res) => {
     try {
-        const { email, password , patientName , fullName , role,phone , gender} = req.body;
+        const { profilePic,email, password , patientName , fullName , role,phone , gender} = req.body;
         const existingPatient = await PatientModel.findOne({ email: email });
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
      
+        
+        let imageUrl = ''; // Default
+
+        if (req.file) {
+            const filePath = req.file.path;
+            const result = await uploadCloudinary(filePath, {
+                folder: 'patients',
+            });
+            imageUrl = result.secure_url;
+            await fs.unlink(filePath); // Delete local file
+        }
+        
+
+
+
         if(existingPatient){
             return res.send("Patient already exists");
         } 
          const patient = new PatientModel({
-         
+             profilePic:imageUrl,
              fullName,
              patientName,
              email,
@@ -31,7 +49,7 @@ const createPatient = async (req, res) => {
 
       res.status(201).json({ msg: "Patient registered successfully" });
     } catch (error) {
-       res.status(500).json({ error});  
+       res.status(500).json({ error: error.message });  
     }
 }
 
@@ -59,11 +77,7 @@ const loginPatient =async (req, res) => {
         res.json({
             message: 'Login successful',
             token,
-            patient: {
-                id: patient._id,
-                patientName: patient.patientName,
-                email: patient.email
-            }
+            patient
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });

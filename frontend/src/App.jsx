@@ -9,6 +9,7 @@ import DoctorDetails from "./pages/DoctorDetails";
 import UserProvider from "./context/UserContext";
 import AppointmentBooking from "./pages/AppointmentBooking";
 
+
 function App() {
   return (
     <Router>
