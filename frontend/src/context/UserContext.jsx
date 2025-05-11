@@ -1,25 +1,27 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+
+// src/context/UserContext.jsx
+import React, { createContext, useState, useEffect } from "react";
+
 const UserContext = createContext();
-
-export const AuthContext  = () => useContext(UserContext);
-
-
+export const AuthContext = UserContext;
 
 const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null); // user object from backend
+  const [loading, setLoading] = useState(true); // to show loader
+  const [role, setRole] = useState(null); // patient | doctor | admin
 
   const fetchUser = async () => {
     const token = localStorage.getItem("token");
-    if (!token) {
-        // alert("Failed to fetch user data. Please log in again.");
+    const storedRole = localStorage.getItem("role");
+
+    if (!token || !storedRole) {
       setLoading(false);
       return;
     }
 
     try {
       const response = await fetch(
-        "http://localhost:4000/api/protected/dashboard",
+        `http://localhost:4000/api/protected/${storedRole}/dashboard`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -28,38 +30,46 @@ const UserProvider = ({ children }) => {
         }
       );
 
-      if (response.status === 401) {
-        console.error("Unauthorized");
-      //  alert("Failed to fetch user data. Please log in again.");
-        return;
+      const contentType = response.headers.get("content-type");
+      if (!response.ok || !contentType.includes("application/json")) {
+        throw new Error("Invalid response from server");
       }
 
       const data = await response.json();
-      setUser(data);
+      setUser(data[storedRole]); // e.g., data.patient, data.admin, data.doctor
+      setRole(storedRole);
+      console.log("User data fetched:", data[storedRole]);
     } catch (error) {
-      // alert("Failed to fetch user data. Please log in again.", error);
-      console.error("Fetch failed:", error);
+      console.error("Fetch user failed:", error.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const loginUser = async (token, accountType) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("role", accountType);
+    await fetchUser();
+  };
+
+  const logoutUser = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    setUser(null);
+    setRole(null);
   };
 
   useEffect(() => {
     fetchUser();
   }, []);
 
-  const loginUser = async (token) => {
-    localStorage.setItem("token", token);
-    await fetchUser(); // fetch and set user data
-  };
-
   return (
-    <UserContext.Provider value={{ user, loading, setUser, loginUser }}>
+    <UserContext.Provider
+      value={{ user, role, loading, setUser, loginUser, logoutUser }}
+    >
       {children}
     </UserContext.Provider>
   );
 };
 
-
 export default UserProvider;
-

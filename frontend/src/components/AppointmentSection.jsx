@@ -1,19 +1,20 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { CalendarIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
 import { AuthContext } from "../context/UserContext";
 
 const AppointmentSection = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = AuthContext(); // Use useContext properly
+  const { user } =  useContext(AuthContext);  // Use useContext properly
   const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
     const fetchRecentAppointments = async () => {
       try {
         const response = await fetch(
-          `http://localhost:4000/api/appointments/${user.patient._id}`
+          `http://localhost:4000/api/appointments/${user._id}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch recent appointments");
@@ -33,7 +34,7 @@ const AppointmentSection = () => {
       }
     };
 
-    if (user?.patient?._id) {
+    if (user._id) {
       fetchRecentAppointments();
     }
   }, [user]);
@@ -71,8 +72,8 @@ const AppointmentSection = () => {
           key={appointment._id || index}
           className="flex items-start p-4 bg-gray-50 rounded-lg"
         >
-          <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
-            <span className="text-blue-800 font-medium">
+          <div className="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center">
+            <span className="text-green-800 font-medium">
               {appointment.doctorInitials || "DR"}
             </span>
           </div>

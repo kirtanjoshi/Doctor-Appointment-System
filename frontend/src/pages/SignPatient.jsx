@@ -5,12 +5,13 @@ import imageCompression from "browser-image-compression";
 
 const SignPatient = () => {
   const [fullName, setFullname] = useState("");
-  const [patientName, setPatientName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profilePic, setProfilePic] = useState(null);
   const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
   const [phone, setPhone] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -23,7 +24,7 @@ const handleRegister = async (e) => {
 
   // Basic validation
   if (!fullName) return alert("Please enter your full name!");
-  if (!patientName) return alert("Please enter a patient name!");
+  if (!username) return alert("Please enter a patient name!");
   if (!email) return alert("Please enter your email!");
   if (!password) return alert("Please enter a password!");
   if (password !== confirmPassword) return alert("Passwords do not match!");
@@ -32,17 +33,19 @@ const handleRegister = async (e) => {
   if (!/^\d+$/.test(phone))
     return alert("Phone number must contain only digits!");
   if (!profilePic) return alert("Please upload a profile picture!");
+  if (!age) return alert("Please enter your age!");
 
   // FormData object to handle file upload
   const formData = new FormData();
   formData.append("profilePic", profilePic); // profilePic should be a File object from input
   formData.append("fullName", fullName);
-  formData.append("patientName", patientName);
+  formData.append("username", username);
   formData.append("email", email);
   formData.append("password", password);
   formData.append("role", "patient");
   formData.append("phone", phone);
   formData.append("gender", gender);
+  formData.append("age", age);
 
   try {
     setLoading(true); 
@@ -131,13 +134,13 @@ const handleProfilePicChange = async (e) => {
 
           <div className="flex flex-col md:flex-row gap-4 mb-4">
             <div className="flex-1">
-              <label className="block mb-1">Patient Name</label>
+              <label className="block mb-1">User Name</label>
               <input
                 type="text"
                 className="w-full p-2 border bg-[#E8F0FE] rounded-md text-[#2D2C45]"
-                placeholder="Choose a patient name"
-                value={patientName}
-                onChange={(e) => setPatientName(e.target.value)}
+                placeholder="Choose a user name"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
@@ -180,15 +183,26 @@ const handleProfilePicChange = async (e) => {
                 required
               />
             </div>
+            <div className="flex-1">
+              <label className="block mb-1">Age</label>
+              <input
+                type="number"
+                className="w-full p-2 border rounded-md text-[#2D2C45]"
+                placeholder="Enter your age"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
+          <div className="flex flex-col md:flex-row gap-4 mb-4 bg-white">
             <div className="flex-1">
               <label className="block mb-1">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="w-full p-3 border rounded-md text-[#D4CFC9] bg-[#1A1A1A] placeholder-[#7C7368]"
+                  className="w-full p-3 border rounded-md text-black  placeholder-[#7C7368]"
                   placeholder="Create a password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -208,7 +222,7 @@ const handleProfilePicChange = async (e) => {
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
-                  className="w-full p-3 border rounded-md text-[#D4CFC9] bg-[#1A1A1A] placeholder-[#7C7368]"
+                  className="w-full p-3 border rounded-md text-black placeholder-[#7C7368]"
                   placeholder="Confirm your password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -231,12 +245,16 @@ const handleProfilePicChange = async (e) => {
             </p>
           </div>
 
-          {loading ? <p>Loading.....</p> : (<button
-            type="submit"
-            className="w-full bg-[#FFA829] text-white py-2 rounded-md hover:bg-[#ff9f17] transition duration-200"
-          >
-            Create Account
-          </button>)}
+          {loading ? (
+            <p>Loading.....</p>
+          ) : (
+            <button
+              type="submit"
+              className="w-full bg-[#FFA829] text-white py-2 rounded-md hover:bg-[#ff9f17] transition duration-200"
+            >
+              Create Account
+            </button>
+          )}
         </form>
       </div>
     </div>

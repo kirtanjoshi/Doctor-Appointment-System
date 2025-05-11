@@ -1,4 +1,7 @@
 import { NavLink } from 'react-router-dom';
+
+import { useContext } from "react";
+import { AuthContext } from "../context/UserContext";
 import { 
   HomeIcon, 
   CalendarIcon, 
@@ -11,23 +14,22 @@ import {
 } from '@heroicons/react/24/outline';
 
 
-import { AuthContext } from "../context/UserContext";
 
 const Sidebar =  () => {
   const menuItems = [
-    { path: "/dashboard", name: "Dashboard", icon: HomeIcon },
+    { path: "/patient/dashboard", name: "Dashboard", icon: HomeIcon },
     { path: "/appointments", name: "Appointments", icon: CalendarIcon },
     {
       path: "/medical-records",
       name: "Medical Records",
       icon: DocumentTextIcon,
     },
-    { path: "/messages", name: "Messages", icon: ChatBubbleLeftIcon },
-    { path: "/find-doctors", name: "Find Doctors", icon: UserGroupIcon },
-    { path: "/profile", name: "Profile", icon: UserIcon },
-    { path: "/settings", name: "Settings", icon: Cog6ToothIcon },
+    { path: "/patient/messages", name: "Messages", icon: ChatBubbleLeftIcon },
+    { path: "/patient/find-doctors", name: "Find Doctors", icon: UserGroupIcon },
+    { path: "/patient/profile", name: "Profile", icon: UserIcon },
+    { path: "/patient/settings", name: "Settings", icon: Cog6ToothIcon },
   ];
-  const { user, loading } = AuthContext();
+  const { user, loading } = useContext(AuthContext); 
 
   const handleLogout = () => {
     // Add logout logic here
@@ -42,7 +44,18 @@ const Sidebar =  () => {
   return (
     <div className="w-64 fixed left-0 top-0 h-screen bg-white shadow-lg flex flex-col">
       <div className="p-4">
-        <h1 className="text-2xl font-bold text-primary">MediBook</h1>
+        <a
+          href="#"
+          className="flex gap-4 items-center self-start text-2xl font-semibold tracking-tighter text-cyan-700 whitespace-nowrap hover:text-cyan-600 transition-colors"
+          aria-label="MediCare"
+        >
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets/e2e8d3b3f7a84c20b8097dec32c134c9/157d3078d46ee1531ba44dd8d05ecda0b18ae26f?placeholderIfAbsent=true"
+            alt="MedEase Logo"
+            className="object-contain shrink-0 self-stretch my-auto w-8 aspect-square"
+          />
+          <span className="self-stretch my-auto">MedCare</span>
+        </a>
       </div>
 
       <nav className="flex-1 mt-8 overflow-y-auto">
@@ -68,12 +81,12 @@ const Sidebar =  () => {
             <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
               <img
                 className="text-primary font-medium"
-                src={user.patient.profilePic}
+                src={user.profilePic}
               ></img>
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium">{user.patient.fullName}</p>
-              <p className="text-xs text-gray-500">{user.patient.email}</p>
+              <p className="text-sm font-medium">{user.fullName}</p>
+              <p className="text-xs text-gray-500">{user.email}</p>
             </div>
           </div>
           <button

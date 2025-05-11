@@ -151,7 +151,7 @@ const getPatientAppointments = async (req, res) => {
 
 
         // Find all bookings for the patient
-        const bookings = await BookingModel.find();
+        const bookings = await BookingModel.find().populate('patientId').populate('doctorId')
 
         if (!bookings || bookings.length === 0) {
             return res.status(404).json({ msg: 'No bookings found for this patient' });

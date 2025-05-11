@@ -9,7 +9,7 @@ dotenv.config();
 
 const createPatient = async (req, res) => {
     try {
-        const { profilePic,email, password , patientName , fullName , role,phone , gender} = req.body;
+        const { profilePic,email, password , username , fullName , role,phone , gender , age} = req.body;
         const existingPatient = await PatientModel.findOne({ email: email });
 
         const salt = await bcrypt.genSalt(10);
@@ -36,12 +36,13 @@ const createPatient = async (req, res) => {
          const patient = new PatientModel({
              profilePic:imageUrl,
              fullName,
-             patientName,
+             username,
              email,
              password: hashedPassword,
              phone,
              gender,
              role,
+             age
             
     });
         await patient.save();
@@ -96,51 +97,11 @@ const getAllPatients = async (req, res) => {
 }
 
 
-// const updatePatient = async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//          const { profilePic, email, fullName, patientName, phone, gender, password, role } = req.body;
-
-//         let imageUrl;
-//         if (req.file) {
-//             const filePath = req.file.path;
-//             const result = await uploadCloudinary(filePath, {
-//                 folder: 'patients',
-//             });
-//             imageUrl = result.secure_url;
-//             await fs.unlink(filePath);
-//         }
-
-//         const updateData = {
-//              profilePic:imageUrl,
-//              fullName,
-//              patientName,
-//              email,
-//              password: hashedPassword,
-//              phone,
-//              gender,
-//         };
-
-//         if (imageUrl) {
-//             updateData.profilePic = imageUrl;
-//         }
-
-//         const updatedPatient = await PatientModel.findByIdAndUpdate(id, updateData, { new: true });
-
-//         if (!updatedPatient) {
-//             return res.status(404).json({ msg: 'Patient not found' });
-//         }
-
-//         res.status(200).json({ msg: 'Patient updated successfully', patient: updatedPatient });
-//     } catch (error) {
-//         res.status(500).json({ error: error.message });
-//     }
-// };
 
 const updatePatient = async (req, res) => {
   try {
     const { id } = req.params;
-    const { profilePic, email, fullName, patientName, phone, gender, password, role } = req.body;
+    const { profilePic, email, fullName, username, phone, gender, password, role } = req.body;
 
     let imageUrl;
     if (req.file) {
@@ -156,11 +117,12 @@ const updatePatient = async (req, res) => {
     const updateData = {};
     if (imageUrl) updateData.profilePic = imageUrl;
     if (fullName) updateData.fullName = fullName;
-    if (patientName) updateData.patientName = patientName;
+    if (username) updateData.username = username;
     if (email) updateData.email = email;
     if (phone) updateData.phone = phone;
     if (gender) updateData.gender = gender;
     if (role) updateData.role = role;
+    if (age) updateData.role = age;
 
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);

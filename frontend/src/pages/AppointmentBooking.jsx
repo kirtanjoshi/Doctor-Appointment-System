@@ -13,6 +13,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 
+import { useContext } from "react";
 import { AuthContext } from "../context/UserContext";
 
 const AppointmentBooking = () => {
@@ -25,7 +26,7 @@ const AppointmentBooking = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date(2025, 2)); // Start with March 2025
 
-  const { user } = AuthContext();
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -78,7 +79,10 @@ const AppointmentBooking = () => {
 //     }
 //   };
 // }, [doctor, user, selectedDate, selectedTime, visitType, visitReason]);
-const bookAppointment = async () => {
+  
+  
+  
+  const bookAppointment = async () => {
   const token = localStorage.getItem("token");
   if (!token) {
     console.warn("No token found. Cannot book appointment.");
@@ -87,7 +91,7 @@ const bookAppointment = async () => {
 
   console.log(token)
   console.log(doctor._id)
-  console.log(user.patient._id)
+  console.log(user._id)
   console.log(selectedDate)
   console.log(selectedTime)
   console.log(visitType)
@@ -105,7 +109,7 @@ const bookAppointment = async () => {
         },
         body: JSON.stringify({
           doctorId: doctor._id,
-          patientId: user.patient._id,
+          patientId: user._id,
           appointmentDate: selectedDate.toISOString(),
           appointmentTime: selectedTime,
           status: "Pending",
@@ -224,7 +228,15 @@ const bookAppointment = async () => {
                   selectedDate.getFullYear() === date?.getFullYear() &&
                   selectedDate.getMonth() === date?.getMonth() &&
                   selectedDate.getDate() === date?.getDate();
-                const isToday = date && date.getDate() === 26; // Highlight 26th as in the image
+                
+                
+                const today = new Date();
+                const isToday =
+                  date &&
+                  date.getFullYear() === today.getFullYear() &&
+                  date.getMonth() === today.getMonth() &&
+                  date.getDate() === today.getDate();
+                // const isToday = date && date.getDate(); // Highlight 26th as in the image
                 return (
                   <button
                     key={index}

@@ -6,14 +6,18 @@ const Navbar = () => {
   const navigate = useNavigate();
   return (
     <nav className="flex flex-wrap gap-5 justify-between items-center py-4 pr-14 pl-6 w-full text-base bg-neutral-100 shadow-[0px_0px_2px_rgba(23,26,31,0.12)] max-md:px-5 max-md:max-w-full">
-      <div className="flex gap-4 items-center self-stretch my-auto text-xl font-semibold tracking-tight text-blue-500 whitespace-nowrap cursor-pointer">
+      <a
+        href="#"
+        className="flex gap-4 items-center self-start text-2xl font-semibold tracking-tighter text-cyan-700 whitespace-nowrap hover:text-cyan-600 transition-colors"
+        aria-label="MediCare"
+      >
         <img
-          src="https://cdn.builder.io/api/v1/image/assets/e2e8d3b3f7a84c20b8097dec32c134c9/6903934321379179b4fbb0889a637d85541fa2c2?placeholderIfAbsent=true"
-          className="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
+          src="https://cdn.builder.io/api/v1/image/assets/e2e8d3b3f7a84c20b8097dec32c134c9/157d3078d46ee1531ba44dd8d05ecda0b18ae26f?placeholderIfAbsent=true"
           alt="MedEase Logo"
+          className="object-contain shrink-0 self-stretch my-auto w-8 aspect-square"
         />
-        <span className="self-stretch my-auto">MedEase</span>
-      </div>
+        <span className="self-stretch my-auto">MedCare</span>
+      </a>
 
       <div className="flex gap-10 self-stretch my-auto leading-relaxed text-zinc-700 max-md:gap-6 max-md:flex-wrap max-md:justify-center">
         <a
@@ -49,7 +53,11 @@ const Navbar = () => {
         >
           Log in.
         </Link>
-        <Button variant="signup" className="max-md:text-sm" onClick={() => navigate("/signUp")}>
+        <Button
+          variant="signup"
+          className="max-md:text-sm"
+          onClick={() => navigate("/signUp")}
+        >
           Sign up
         </Button>
       </div>

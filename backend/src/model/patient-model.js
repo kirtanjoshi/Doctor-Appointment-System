@@ -10,7 +10,7 @@ const PatientSchema = new Schema({
         trim: true
     },
 
-    patientName: {
+    username: {
         type: String,
         required: [true, 'Username is required'],
         unique: true
@@ -39,6 +39,11 @@ const PatientSchema = new Schema({
         type: String,
         enum: ['male', 'female', 'other'],
         required: true
+    },
+    age: {
+        type: Number,
+        required: [true, 'Age is required'],
+        min: [0, 'Age cannot be negative']
     },
 
     createdOn: { type: Date },

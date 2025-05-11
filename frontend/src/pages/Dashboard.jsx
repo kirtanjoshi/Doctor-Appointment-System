@@ -1,7 +1,6 @@
 // Dashboard.jsx
 import React, { useState } from "react";
 
-import { AuthContext } from "../context/UserContext";
 import {
   CalendarIcon,
   DocumentTextIcon,
@@ -15,11 +14,17 @@ import RecentAppointments from "../components/RecentAppointments";
 import RecentMessages from "../components/RecentMessages";
 import RecentRecords from "../components/RecentRecords";
 // import Sidebar from "../components/Sidebar";
+import PatientInfoCard from "../components/PatientInfoCard";
+
+
+
+import { useContext } from "react";
+import { AuthContext } from "../context/UserContext";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("appointments");
   const navigate = useNavigate();
- const { user, loading } = AuthContext();
+ const { user, loading }  = useContext(AuthContext); 
 
 
   const stats = [
@@ -124,7 +129,7 @@ const Dashboard = () => {
           + Book Appointment
         </button>
       </div>
-
+      <PatientInfoCard />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         {stats.map((stat, index) => (
           <StatsCard key={index} {...stat} />

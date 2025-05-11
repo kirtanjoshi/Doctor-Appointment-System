@@ -1,9 +1,47 @@
-import { useState, useRef } from "react";
+import React, { useState,  useRef, useContext } from "react";
 
-export default function Settings() {
+import { AuthContext } from "../context/UserContext";
+
+function Settings() {
+  const { user } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("account");
   const [profileImage, setProfileImage] = useState(null);
   const fileInputRef = useRef(null);
+
+  const [formData, setFormData] = useState({
+    username: user.username || "",
+    email: user.email || "",
+    fullName: user.fullName || "",
+    phone: user.phone || "",
+    age: user.age || "",
+    gender: user.gender || "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdateProfile = async () => {
+    try {
+      const res = await fetch(`http://localhost:4000/api/patient/update/${user._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Profile updated successfully!");
+      } else {
+        alert("Failed to update profile: " + data.message);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Something went wrong.");
+    }
+  };
+
+  const tabs = ["account", "security", "notifications"];
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -12,25 +50,23 @@ export default function Settings() {
     }
   };
 
-  const tabs = ["account", "security", "notifications"];
-
   return (
-    <div className="p-6 max-w-4xl mx-auto text-sm md:text-base">
-      <h1 className="text-2xl font-bold mb-2">Settings</h1>
-      <p className="mb-4 text-gray-600">
+    <div className="p-8">
+      <h1 className="text-3xl font-bold mb-2 text-gray-800">Settings</h1>
+      <p className="mb-6 text-gray-500">
         Manage your account settings and preferences
       </p>
 
       {/* Tabs */}
-      <div className="flex space-x-4 mb-6">
+      <div className="flex flex-wrap gap-2 mb-8">
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-md font-medium capitalize transition-all duration-300 ${
+            className={`px-5 py-2 rounded-full font-semibold capitalize transition-all duration-300 border ${
               activeTab === tab
-                ? "bg-teal-100 text-black"
-                : "bg-gray-100 text-gray-600"
+                ? "bg-teal-600 text-white shadow-md"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
             {tab}
@@ -38,30 +74,36 @@ export default function Settings() {
         ))}
       </div>
 
-      {/* Content Container with fixed layout */}
+      {/* Content */}
       <div className="relative min-h-[600px]">
-        {/* ACCOUNT */}
+        {/* ACCOUNT TAB */}
         <div
-          className={`absolute inset-0 transition-opacity duration-500 ${
+          className={`absolute inset-0 transition-all duration-500 ${
             activeTab === "account"
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
+              ? "opacity-100 scale-100 pointer-events-auto"
+              : "opacity-0 scale-95 pointer-events-none"
           }`}
         >
-          <div className="bg-white shadow p-6 rounded-xl space-y-4">
-            <h2 className="text-lg font-semibold">Account Information</h2>
+          <div className="bg-white shadow-lg p-8 rounded-2xl space-y-6">
+            <h2 className="text-xl font-bold text-teal-700">
+              Account Information
+            </h2>
 
-            {/* Profile Image Upload */}
-            <div className="flex items-center space-x-4">
+            {/* Profile Image */}
+            <div className="flex items-center gap-6">
               <img
-                src={profileImage || "https://via.placeholder.com/80"}
+                src={
+                  profileImage ||
+                  user.profilePic ||
+                  "https://via.placeholder.com/80"
+                }
                 alt="Profile"
-                className="w-20 h-20 rounded-full object-cover border border-teal-300"
+                className="w-20 h-20 rounded-full object-cover border-4 border-teal-300"
               />
               <div>
                 <button
                   onClick={() => fileInputRef.current.click()}
-                  className="bg-teal-700 text-white px-3 py-1 rounded-md hover:bg-teal-800"
+                  className="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700"
                 >
                   Change Photo
                 </button>
@@ -75,54 +117,49 @@ export default function Settings() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+            {/* Input Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+              <InputField
+                label="Username"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+              />
+              <InputField
+                label="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              <InputField
+                label="Full Name"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+              />
+              <InputField
+                label="Phone Number"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+              <InputField
+                label="Age"
+                name="age"
+                type="number"
+                value={formData.age}
+                onChange={handleChange}
+              />
               <div>
-                <label className="block text-sm font-medium">Username</label>
-                <input
-                  disabled
-                  value="aayush"
-                  className="w-full mt-1 p-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-300"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Your username cannot be changed
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Email</label>
-                <input
-                  defaultValue="aayushkhadka@gmail.com"
-                  className="w-full mt-1 p-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-300"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Full Name</label>
-                <input
-                  defaultValue="Aayush Khadka"
-                  className="w-full mt-1 p-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-300"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">
-                  Phone Number
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Gender
                 </label>
-                <input className="w-full mt-1 p-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-300" />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium">Address</label>
-                <input className="w-full mt-1 p-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-300" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">
-                  Date of Birth
-                </label>
-                <input
-                  type="date"
-                  className="w-full mt-1 p-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-300"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Gender</label>
-                <select className="w-full mt-1 p-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-300">
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
+                >
                   <option>Select gender</option>
                   <option>Male</option>
                   <option>Female</option>
@@ -130,87 +167,65 @@ export default function Settings() {
                 </select>
               </div>
             </div>
-            <button className="mt-4 bg-teal-700 text-white px-4 py-2 rounded-md hover:bg-teal-800">
-              Save Changes
-            </button>
+
+            <div className="text-right">
+              <button
+                onClick={handleUpdateProfile}
+                className="mt-6 bg-teal-600 text-white px-6 py-2 rounded-md hover:bg-teal-700"
+              >
+                Save Changes
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* SECURITY */}
+        {/* SECURITY TAB */}
         <div
-          className={`absolute inset-0 transition-opacity duration-500 ${
+          className={`absolute inset-0 transition-all duration-500 ${
             activeTab === "security"
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
+              ? "opacity-100 scale-100 pointer-events-auto"
+              : "opacity-0 scale-95 pointer-events-none"
           }`}
         >
-          <div className="bg-white shadow p-6 rounded-xl space-y-4">
-            <h2 className="text-lg font-semibold">Password</h2>
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="bg-white shadow-lg p-8 rounded-2xl space-y-6">
+            <h2 className="text-xl font-bold text-teal-700">Password</h2>
+            <p className="text-gray-500">
               Change your password to keep your account secure
             </p>
+
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium">
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  className="w-full mt-1 p-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-300"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  className="w-full mt-1 p-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-300"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Password must be at least 8 characters long
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium">
-                  Confirm New Password
-                </label>
-                <input
-                  type="password"
-                  className="w-full mt-1 p-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-300"
-                />
-              </div>
+              <InputField label="Current Password" type="password" />
+              <InputField label="New Password" type="password" />
+              <InputField label="Confirm New Password" type="password" />
             </div>
-            <button className="mt-4 bg-teal-700 text-white px-4 py-2 rounded-md hover:bg-teal-800 transition-colors">
-              Update Password
-            </button>
+
+            <div className="text-right">
+              <button className="mt-6 bg-teal-600 text-white px-6 py-2 rounded-md hover:bg-teal-700">
+                Update Password
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* NOTIFICATIONS */}
+        {/* NOTIFICATIONS TAB */}
         <div
-          className={`absolute inset-0 transition-opacity duration-500 ${
+          className={`absolute inset-0 transition-all duration-500 ${
             activeTab === "notifications"
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
+              ? "opacity-100 scale-100 pointer-events-auto"
+              : "opacity-0 scale-95 pointer-events-none"
           }`}
         >
-          <div className="bg-white shadow p-6 rounded-xl space-y-4">
-            <h2 className="text-lg font-semibold">Notification Preferences</h2>
-            <div className="space-y-3">
+          <div className="bg-white shadow-lg p-8 rounded-2xl space-y-6">
+            <h2 className="text-xl font-bold text-teal-700">
+              Notification Preferences
+            </h2>
+            <div className="space-y-4">
               {[
                 "Appointment Reminders",
                 "Promotional Offers",
                 "System Alerts",
-              ].map((label) => (
-                <div key={label} className="flex items-center justify-between">
-                  <span>{label}</span>
-                  <label className="inline-flex relative items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" />
-                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-teal-600 transition-colors duration-300"></div>
-                    <span className="w-4 h-4 bg-white rounded-full absolute left-1 top-1 transition-transform duration-300 transform peer-checked:translate-x-5"></span>
-                  </label>
-                </div>
+              ].map((item) => (
+                <ToggleSwitch key={item} label={item} />
               ))}
             </div>
           </div>
@@ -219,3 +234,38 @@ export default function Settings() {
     </div>
   );
 }
+
+function InputField({ label, type = "text", name, value, onChange, disabled }) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        {label}
+      </label>
+      <input
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+        className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400 ${
+          disabled ? "bg-gray-100 cursor-not-allowed" : ""
+        }`}
+      />
+    </div>
+  );
+}
+
+function ToggleSwitch({ label }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-gray-700">{label}</span>
+      <label className="relative inline-flex items-center cursor-pointer">
+        <input type="checkbox" className="sr-only peer" />
+        <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-teal-600 transition-all"></div>
+        <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5"></div>
+      </label>
+    </div>
+  );
+}
+
+export default Settings;

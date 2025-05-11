@@ -2,26 +2,62 @@
 
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
 import { AuthContext } from "../context/UserContext";
+
 
 const SignInPage = () => {
   const [accountType, setAccountType] = useState("patient"); // patient | doctor | admin
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { loginUser } = AuthContext(); // useContext instead of function call
+  const { loginUser } = useContext(AuthContext); 
+
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   let endpoint = "";
+
+  //   if (accountType === "patient") {
+  //     endpoint = "http://localhost:4000/api/auth/patient/login";
+  //   } else if (accountType === "doctor") {
+  //     endpoint = "http://localhost:4000/api/auth/doctor/login";
+  //   } else if (accountType === "admin") {
+  //     endpoint = "http://localhost:4000/api/auth/admin/login";
+  //   }
+
+  //   try {
+  //     const response = await fetch(endpoint, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ email, password }),
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (data.token) {
+  //     await loginUser(data.token);
+
+  //   if (accountType === "patient") {
+  //     navigate("/dashboard");
+
+  //  } else if (accountType === "doctor") {
+  //     <p>Doctor</p>
+  //   } else if (accountType === "admin") {
+  //       <p>Admin</p>;
+  //   }
+
+  //     } else {
+  //       console.error("Invalid login response:", data);
+  //     }
+  //   } catch (error) {
+  //     console.error(`${accountType} login error:`, error);
+  //   }
+  // };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    let endpoint = "";
 
-    if (accountType === "patient") {
-      endpoint = "http://localhost:4000/api/auth/patient/login";
-    } else if (accountType === "doctor") {
-      endpoint = "http://localhost:4000/api/auth/doctor/login";
-    } else if (accountType === "admin") {
-      endpoint = "http://localhost:4000/api/auth/admin/login";
-    }
+    const endpoint = `http://localhost:4000/api/auth/${accountType}/login`;
 
     try {
       const response = await fetch(endpoint, {
@@ -33,13 +69,24 @@ const SignInPage = () => {
       const data = await response.json();
 
       if (data.token) {
-        await loginUser(data.token);
-        navigate("/dashboard");
+        await loginUser(data.token, accountType);
+
+        if (accountType === "patient") navigate("/patient/dashboard");
+        else if (accountType === "doctor") {
+          alert("Doctor login successful");
+          // navigate("/doctor/dashboard");
+        }
+        else if (accountType === "admin") {
+          alert("Admin login successful");
+          navigate("/admin/dashboard");
+        }
       } else {
-        console.error("Invalid login response:", data);
+        alert("Invalid credentials");
+        console.error("Login failed:", data);
       }
     } catch (error) {
-      console.error(`${accountType} login error:`, error);
+      console.error(`${accountType} login error:`, error.message);
+      alert("Login failed. Check your server or credentials.");
     }
   };
 
