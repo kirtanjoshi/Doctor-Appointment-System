@@ -129,7 +129,8 @@ const Dashboard = () => {
           + Book Appointment
         </button>
       </div>
-      <PatientInfoCard />
+      <Patien
+        tInfoCard />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         {stats.map((stat, index) => (
           <StatsCard key={index} {...stat} />

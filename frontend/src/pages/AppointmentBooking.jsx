@@ -1,6 +1,3 @@
-
-
-
 import { useState, useEffect, Fragment } from "react";
 import { useParams } from "react-router-dom";
 import { Dialog, Transition } from "@headlessui/react";
@@ -41,45 +38,7 @@ const AppointmentBooking = () => {
     fetchDoctor();
   }, [id]);
 
-// useEffect(() => {
-//   const bookAppointment = async () => {
-//     const token = localStorage.getItem("token");
-//     if (!token) {
-//       console.warn("No token found. Cannot book appointment.");
-//       return;
-//     }
 
-//     try {
-//       const response = await fetch("http://localhost:4000/api/book", {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify({
-//           doctorId: doctor.id,
-//           patientId: user.patient.id,
-//           appointmentDate: selectedDate,
-//           appointmentTime: selectedTime,
-//           visitType,
-//           visitReason,
-//         }),
-//       });
-
-//       const data = await response.json();
-
-//       if (!response.ok) {
-//         console.error("Booking failed:", data.message || response.statusText);
-//         return;
-//       }
-
-//       console.log("Appointment booked successfully:", data);
-//     } catch (err) {
-//       console.error("Error booking appointment:", err);
-//     }
-//   };
-// }, [doctor, user, selectedDate, selectedTime, visitType, visitReason]);
-  
   
   
   const bookAppointment = async () => {
@@ -228,33 +187,36 @@ const AppointmentBooking = () => {
                   selectedDate.getFullYear() === date?.getFullYear() &&
                   selectedDate.getMonth() === date?.getMonth() &&
                   selectedDate.getDate() === date?.getDate();
-                
-                
+
                 const today = new Date();
                 const isToday =
                   date &&
                   date.getFullYear() === today.getFullYear() &&
                   date.getMonth() === today.getMonth() &&
                   date.getDate() === today.getDate();
-                // const isToday = date && date.getDate(); // Highlight 26th as in the image
+
+                const isPast =
+                  date &&
+                  date.setHours(0, 0, 0, 0) < today.setHours(0, 0, 0, 0);
+
                 return (
                   <button
                     key={index}
                     onClick={() => {
-                      if (date) {
+                      if (date && !isPast) {
                         setSelectedDate(date);
                         setSelectedTime(null);
                       }
                     }}
-                    disabled={!date}
+                    disabled={!date || isPast}
                     className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-xs sm:text-sm font-medium rounded-full transition-colors ${
-                      date
-                        ? isSelected
-                          ? "bg-teal-500 text-white"
-                          : isToday
-                          ? "bg-teal-100 text-teal-600"
-                          : "hover:bg-teal-100 text-gray-700"
-                        : "text-gray-300 cursor-not-allowed"
+                      !date || isPast
+                        ? "text-gray-300 cursor-not-allowed"
+                        : isSelected
+                        ? "bg-teal-500 text-white"
+                        : isToday
+                        ? "bg-teal-100 text-teal-600"
+                        : "hover:bg-teal-100 text-gray-700"
                     }`}
                   >
                     {date ? date.getDate() : ""}
@@ -400,7 +362,6 @@ const AppointmentBooking = () => {
                   </p>
                 </div>
               </div>
-             
             </div>
             <button
               onClick={handleConfirmBooking}

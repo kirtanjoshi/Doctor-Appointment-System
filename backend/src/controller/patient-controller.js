@@ -101,7 +101,7 @@ const getAllPatients = async (req, res) => {
 const updatePatient = async (req, res) => {
   try {
     const { id } = req.params;
-    const { profilePic, email, fullName, username, phone, gender, password, role } = req.body;
+    const { profilePic, email, fullName, username, phone, gender, password, role,age } = req.body;
 
     let imageUrl;
     if (req.file) {

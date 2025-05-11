@@ -1,12 +1,18 @@
-import React, { useState,  useRef, useContext } from "react";
 
+
+
+
+import React, { useState, useRef, useContext } from "react";
 import { AuthContext } from "../context/UserContext";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { toast } from "react-toastify";
 
 function Settings() {
-  const { user } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("account");
-  const [profileImage, setProfileImage] = useState(null);
   const fileInputRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const [formData, setFormData] = useState({
     username: user.username || "",
@@ -17,38 +23,118 @@ function Settings() {
     gender: user.gender || "",
   });
 
+  const [profileImage, setProfileImage] = useState(
+    user.profilePic || "https://via.placeholder.com/80"
+  );
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdateProfile = async () => {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setProfileImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleUpdateAccount = async () => {
     try {
-      const res = await fetch(`http://localhost:4000/api/patient/update/${user._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const formDataToSend = new FormData();
+      formDataToSend.append("username", formData.username);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("fullName", formData.fullName);
+      formDataToSend.append("phone", formData.phone);
+      formDataToSend.append("age", formData.age);
+      formDataToSend.append("gender", formData.gender);
+
+      if (selectedFile) {
+        formDataToSend.append("profilePic", selectedFile);
+      }
+
+      const res = await fetch(
+        `http://localhost:4000/api/patient/update/${user._id}`,
+        {
+          method: "PUT",
+          body: formDataToSend,
+        }
+      );
       const data = await res.json();
+
       if (res.ok) {
-        alert("Profile updated successfully!");
+        setUser(data.patient);
+        // toast.success("Profile updated!");
+      toast.success("Profile updated successfully!");
       } else {
         alert("Failed to update profile: " + data.message);
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Something went wrong.");
+      toast.error("Something went wrong.");
+      toast.loading("Loading...");
     }
   };
+
+  const formik = useFormik({
+    initialValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+    validationSchema: Yup.object({
+      currentPassword: Yup.string().required("Current password is required"),
+      newPassword: Yup.string()
+        .min(6, "New password must be at least 6 characters")
+        .required("New password is required"),
+      confirmPassword: Yup.string()
+        .oneOf([Yup.ref("newPassword")], "Passwords must match")
+        .required("Please confirm your password"),
+    }),
+    onSubmit: async (values) => {
+      const formDataToSend = new FormData();
+      formDataToSend.append("username", formData.username);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("fullName", formData.fullName);
+      formDataToSend.append("phone", formData.phone);
+      formDataToSend.append("age", formData.age);
+      formDataToSend.append("gender", formData.gender);
+      formDataToSend.append("password", values.newPassword);
+      formDataToSend.append("currentPassword", values.currentPassword);
+
+      if (selectedFile) {
+        formDataToSend.append("profilePic", selectedFile);
+      }
+
+      try {
+        const res = await fetch(
+          `http://localhost:4000/api/patient/update/${user._id}`,
+          {
+            method: "PUT",
+            body: formDataToSend,
+          }
+        );
+        const data = await res.json();
+
+        if (res.ok) {
+          setUser(data.patient);
+          alert("Password updated successfully!");
+        } else {
+          if (data.error === "Incorrect current password") {
+            formik.setErrors({ currentPassword: data.error });
+          } else {
+            alert("Failed to update password: " + data.message);
+          }
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Something went wrong.");
+      }
+    },
+  });
 
   const tabs = ["account", "security", "notifications"];
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProfileImage(URL.createObjectURL(file));
-    }
-  };
 
   return (
     <div className="p-8">
@@ -57,7 +143,6 @@ function Settings() {
         Manage your account settings and preferences
       </p>
 
-      {/* Tabs */}
       <div className="flex flex-wrap gap-2 mb-8">
         {tabs.map((tab) => (
           <button
@@ -74,29 +159,16 @@ function Settings() {
         ))}
       </div>
 
-      {/* Content */}
       <div className="relative min-h-[600px]">
-        {/* ACCOUNT TAB */}
-        <div
-          className={`absolute inset-0 transition-all duration-500 ${
-            activeTab === "account"
-              ? "opacity-100 scale-100 pointer-events-auto"
-              : "opacity-0 scale-95 pointer-events-none"
-          }`}
-        >
-          <div className="bg-white shadow-lg p-8 rounded-2xl space-y-6">
+        {activeTab === "account" && (
+          <div className="bg-white shadow-lg p-8 rounded-2xl space-y-6 transition-all">
             <h2 className="text-xl font-bold text-teal-700">
               Account Information
             </h2>
 
-            {/* Profile Image */}
             <div className="flex items-center gap-6">
               <img
-                src={
-                  profileImage ||
-                  user.profilePic ||
-                  "https://via.placeholder.com/80"
-                }
+                src={profileImage}
                 alt="Profile"
                 className="w-20 h-20 rounded-full object-cover border-4 border-teal-300"
               />
@@ -117,7 +189,6 @@ function Settings() {
               </div>
             </div>
 
-            {/* Input Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
               <InputField
                 label="Username"
@@ -161,60 +232,92 @@ function Settings() {
                   className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
                 >
                   <option>Select gender</option>
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Other</option>
+                  <option>male</option>
+                  <option>female</option>
+                  <option>other</option>
                 </select>
               </div>
             </div>
 
             <div className="text-right">
               <button
-                onClick={handleUpdateProfile}
+                onClick={handleUpdateAccount}
                 className="mt-6 bg-teal-600 text-white px-6 py-2 rounded-md hover:bg-teal-700"
               >
                 Save Changes
               </button>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* SECURITY TAB */}
-        <div
-          className={`absolute inset-0 transition-all duration-500 ${
-            activeTab === "security"
-              ? "opacity-100 scale-100 pointer-events-auto"
-              : "opacity-0 scale-95 pointer-events-none"
-          }`}
-        >
+        {activeTab === "security" && (
           <div className="bg-white shadow-lg p-8 rounded-2xl space-y-6">
-            <h2 className="text-xl font-bold text-teal-700">Password</h2>
+            <h2 className="text-xl font-bold text-teal-700">Change Password</h2>
             <p className="text-gray-500">
               Change your password to keep your account secure
             </p>
 
-            <div className="space-y-4">
-              <InputField label="Current Password" type="password" />
-              <InputField label="New Password" type="password" />
-              <InputField label="Confirm New Password" type="password" />
-            </div>
+            <form onSubmit={formik.handleSubmit} className="space-y-4">
+              <div>
+                <InputField
+                  label="Current Password"
+                  type="password"
+                  name="currentPassword"
+                  value={formik.values.currentPassword}
+                  onChange={formik.handleChange}
+                />
+                {formik.errors.currentPassword &&
+                  formik.touched.currentPassword && (
+                    <p className="text-sm text-red-600">
+                      {formik.errors.currentPassword}
+                    </p>
+                  )}
+              </div>
 
-            <div className="text-right">
-              <button className="mt-6 bg-teal-600 text-white px-6 py-2 rounded-md hover:bg-teal-700">
-                Update Password
-              </button>
-            </div>
+              <div>
+                <InputField
+                  label="New Password"
+                  type="password"
+                  name="newPassword"
+                  value={formik.values.newPassword}
+                  onChange={formik.handleChange}
+                />
+                {formik.errors.newPassword && formik.touched.newPassword && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.newPassword}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <InputField
+                  label="Confirm New Password"
+                  type="password"
+                  name="confirmPassword"
+                  value={formik.values.confirmPassword}
+                  onChange={formik.handleChange}
+                />
+                {formik.errors.confirmPassword &&
+                  formik.touched.confirmPassword && (
+                    <p className="text-sm text-red-600">
+                      {formik.errors.confirmPassword}
+                    </p>
+                  )}
+              </div>
+
+              <div className="text-right">
+                <button
+                  type="submit"
+                  className="mt-6 bg-teal-600 text-white px-6 py-2 rounded-md hover:bg-teal-700"
+                >
+                  Update Password
+                </button>
+              </div>
+            </form>
           </div>
-        </div>
+        )}
 
-        {/* NOTIFICATIONS TAB */}
-        <div
-          className={`absolute inset-0 transition-all duration-500 ${
-            activeTab === "notifications"
-              ? "opacity-100 scale-100 pointer-events-auto"
-              : "opacity-0 scale-95 pointer-events-none"
-          }`}
-        >
+        {activeTab === "notifications" && (
           <div className="bg-white shadow-lg p-8 rounded-2xl space-y-6">
             <h2 className="text-xl font-bold text-teal-700">
               Notification Preferences
@@ -229,7 +332,7 @@ function Settings() {
               ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

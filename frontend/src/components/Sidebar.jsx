@@ -80,7 +80,7 @@ const Sidebar =  () => {
           <div className="flex items-center">
             <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
               <img
-                className="text-primary font-medium"
+                className="text-primary font-medium rounded-full"
                 src={user.profilePic}
               ></img>
             </div>

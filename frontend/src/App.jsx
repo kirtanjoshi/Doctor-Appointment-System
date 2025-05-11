@@ -16,7 +16,8 @@ import DoctorEdit from "./pages/Admin/DoctorEdit";
 import PatientEdit from "./pages/Admin/PatientEdit";
 import AppLayout from "./pages/AppLayout";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 function App() {
@@ -95,6 +96,7 @@ function App() {
             <Route path="appointments/:id" element={<AppointmentBooking />} />
           </Route>
         </Routes>
+        <ToastContainer position="top-right" autoClose={3000} />
       </UserProvider>
     </Router>
   );
