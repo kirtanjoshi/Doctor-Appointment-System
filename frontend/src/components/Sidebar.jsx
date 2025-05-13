@@ -24,9 +24,7 @@ const Sidebar =  () => {
       name: "Medical Records",
       icon: DocumentTextIcon,
     },
-    { path: "/patient/messages", name: "Messages", icon: ChatBubbleLeftIcon },
     { path: "/patient/find-doctors", name: "Find Doctors", icon: UserGroupIcon },
-    { path: "/patient/profile", name: "Profile", icon: UserIcon },
     { path: "/patient/settings", name: "Settings", icon: Cog6ToothIcon },
   ];
   const { user, loading } = useContext(AuthContext); 

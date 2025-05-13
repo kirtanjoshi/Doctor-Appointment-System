@@ -73,9 +73,11 @@ const AppointmentSection = () => {
           className="flex items-start p-4 bg-gray-50 rounded-lg"
         >
           <div className="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center">
-            <span className="text-green-800 font-medium">
-              {appointment.doctorInitials || "DR"}
-            </span>
+            <img
+             
+              src={appointment.doctorId.profilePic || "DR"}
+              className="text-green-800 font-medium "
+            ></img>
           </div>
           <div className="ml-4 flex-1">
             <h4 className="font-medium">{appointment.doctorId.fullName}</h4>

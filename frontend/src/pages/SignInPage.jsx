@@ -74,7 +74,7 @@ const SignInPage = () => {
         if (accountType === "patient") navigate("/patient/dashboard");
         else if (accountType === "doctor") {
           alert("Doctor login successful");
-          // navigate("/doctor/dashboard");
+          navigate("/doctor/dashboard");
         }
         else if (accountType === "admin") {
           alert("Admin login successful");

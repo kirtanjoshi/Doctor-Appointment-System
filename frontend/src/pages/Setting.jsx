@@ -119,7 +119,7 @@ function Settings() {
 
         if (res.ok) {
           setUser(data.patient);
-          alert("Password updated successfully!");
+          toast.success("Password updated successfully!");
         } else {
           if (data.error === "Incorrect current password") {
             formik.setErrors({ currentPassword: data.error });
@@ -129,7 +129,7 @@ function Settings() {
         }
       } catch (error) {
         console.error("Error:", error);
-        alert("Something went wrong.");
+        toast.error("Something went wrong.");
       }
     },
   });

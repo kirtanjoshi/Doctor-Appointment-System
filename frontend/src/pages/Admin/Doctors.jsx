@@ -9,7 +9,7 @@ function Doctors() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [doctors, setDoctors] = useState([]);
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);EditButton;
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [doctorToDelete, setDoctorToDelete] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
@@ -47,11 +47,18 @@ function Doctors() {
     qualifications: "",
   });
 
+  // const [newAvailability, setNewAvailability] = useState({
+  //   day: "",
+  //   startTime: "",
+  //   endTime: "",
+  // });
+
+
   const [newAvailability, setNewAvailability] = useState({
     day: "",
-    startTime: "",
-    endTime: "",
+    timeSlot: "", // just a single slot at a time
   });
+
 
   const [form, setForm] = useState({ availability: [] });
 
@@ -85,27 +92,76 @@ function Doctors() {
     setNewAvailability((prev) => ({ ...prev, [name]: value }));
   };
 
+  // const addAvailability = () => {
+  //   if (
+  //     !newAvailability.day ||
+  //     !newAvailability.startTime ||
+  //     !newAvailability.endTime
+  //   ) {
+  //     alert("Please fill all availability fields.");
+  //     return;
+  //   }
+  //   setForm((prev) => ({
+  //     ...prev,
+  //     availability: [...prev.availability, newAvailability],
+  //   }));
+  //   setNewAvailability({ day: "", startTime: "", endTime: "" });
+  // };
+
+
   const addAvailability = () => {
-    if (
-      !newAvailability.day ||
-      !newAvailability.startTime ||
-      !newAvailability.endTime
-    ) {
-      alert("Please fill all availability fields.");
+    const { day, timeSlot } = newAvailability;
+    if (!day || !timeSlot) {
+      alert("Please select day and time slot.");
       return;
     }
-    setForm((prev) => ({
-      ...prev,
-      availability: [...prev.availability, newAvailability],
-    }));
-    setNewAvailability({ day: "", startTime: "", endTime: "" });
+
+    setForm((prev) => {
+      const updated = [...prev.availability];
+      const existing = updated.find((item) => item.day === day);
+
+      if (existing) {
+        if (!existing.timeSlot.includes(timeSlot)) {
+          existing.timeSlot.push(timeSlot);
+        }
+      } else {
+        updated.push({ day, timeSlot: [timeSlot] });
+      }
+
+      return { ...prev, availability: updated };
+    });
+
+    setNewAvailability({ day: "", timeSlot: "" });
   };
+
 
   const removeAvailability = (index) => {
     const updated = [...form.availability];
     updated.splice(index, 1);
     setForm((prev) => ({ ...prev, availability: updated }));
   };
+
+
+  const handleDeleteDoctor = async (id) => {
+    try {
+      const res = await fetch(
+        `http://localhost:4000/api/doctors/delete/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (res.ok) {
+        alert("Doctor deleted successfully");
+        // setShowDeleteModal(false);
+        fetchDoctors();
+      } else {
+        alert("Failed to delete doctor");
+      }
+    } catch (err) {
+      console.error("Error deleting doctor:", err);
+      alert("Something went wrong");
+    }
+  }
 
 const handleAddDoctor = async (e) => {
   e.preventDefault();
@@ -118,7 +174,19 @@ const handleAddDoctor = async (e) => {
   formData.append("fee", newDoctor.fee);
   formData.append("specialization", newDoctor.specialization);
   formData.append("qualifications", newDoctor.qualifications);
-  formData.append("availability", JSON.stringify(form.availability));
+
+
+  const availabilityFormatted = form.availability.map((slot) => ({
+    day: slot.day,
+    timeSlot: slot.timeSlot.map((t) =>
+      new Date(`1970-01-01T${t}`).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+    ),
+  })); 
+  formData.append("availability", JSON.stringify(availabilityFormatted));
 
   if (profilePic) {
     formData.append("profilePic", profilePic);
@@ -156,6 +224,8 @@ const handleAddDoctor = async (e) => {
     alert("Something went wrong");
   }
 };
+;
+
 
   const filteredDoctors = doctors.filter(
     (doctor) =>
@@ -169,7 +239,7 @@ const handleAddDoctor = async (e) => {
         <h1 className="text-3xl font-bold">Manage Doctors</h1>
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2"
+          className="bg-emerald-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2"
         >
           <Plus className="h-5 w-5" /> Add Doctor
         </button>
@@ -214,12 +284,11 @@ const handleAddDoctor = async (e) => {
                   <td className="p-3">Rs. {doc.fee}</td>
                   <td className="p-3 flex gap-2">
                     <EditButton
-                      onClick={() => navigate(`/doctors/${doc._id}`)}
+                      onClick={() => navigate(`/admin/doctors/edit/${doc._id}`)}
                     />
                     <DeleteButton
                       onClick={() => {
-                        setDoctorToDelete(doc);
-                        setShowDeleteModal(true);
+                        handleDeleteDoctor(doc._id);
                       }}
                     />
                   </td>
@@ -338,7 +407,12 @@ const handleAddDoctor = async (e) => {
                   <select
                     name="day"
                     value={newAvailability.day}
-                    onChange={handleNewAvailabilityChange}
+                    onChange={(e) =>
+                      setNewAvailability((prev) => ({
+                        ...prev,
+                        day: e.target.value,
+                      }))
+                    }
                     className="p-3 border rounded-lg w-full md:w-1/3 bg-gray-50"
                   >
                     <option value="">Select Day</option>
@@ -348,20 +422,20 @@ const handleAddDoctor = async (e) => {
                       </option>
                     ))}
                   </select>
+
                   <input
                     type="time"
-                    name="startTime"
-                    value={newAvailability.startTime}
-                    onChange={handleNewAvailabilityChange}
-                    className="p-3 border rounded-lg w-full md:w-1/4 bg-gray-50"
+                    name="timeSlot"
+                    value={newAvailability.timeSlot}
+                    onChange={(e) =>
+                      setNewAvailability((prev) => ({
+                        ...prev,
+                        timeSlot: e.target.value,
+                      }))
+                    }
+                    className="p-3 border rounded-lg w-full md:w-1/3 bg-gray-50"
                   />
-                  <input
-                    type="time"
-                    name="endTime"
-                    value={newAvailability.endTime}
-                    onChange={handleNewAvailabilityChange}
-                    className="p-3 border rounded-lg w-full md:w-1/4 bg-gray-50"
-                  />
+
                   <button
                     type="button"
                     onClick={addAvailability}
@@ -376,13 +450,23 @@ const handleAddDoctor = async (e) => {
                   {form.availability.map((slot, idx) => (
                     <div
                       key={idx}
-                      className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm flex items-center gap-2"
+                      className="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm"
                     >
-                      {slot.day}: {slot.startTime} - {slot.endTime}
-                      <X
-                        className="h-4 w-4 cursor-pointer"
-                        onClick={() => removeAvailability(idx)}
-                      />
+                      {/* <strong>{slot.day}</strong>: {slot.timeSlot.join(", ")} */}
+                      <strong>{slot.day}</strong>:{" "}
+                      {slot.timeSlot.map((time, i) => (
+                        <span key={i}>
+                          {new Date(`1970-01-01T${time}`).toLocaleTimeString(
+                            [],
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
+                          )}
+                          {i !== slot.timeSlot.length - 1 && ", "}
+                        </span>
+                      ))}
                     </div>
                   ))}
                 </div>
@@ -424,3 +508,4 @@ const handleAddDoctor = async (e) => {
 }
 
 export default Doctors;
+

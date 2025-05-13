@@ -6,6 +6,7 @@ const router = express.Router();
 
 const PatientModel = require('../model/patient-model');
 const AdminModel = require('../model/admin-model');
+const DoctorModel = require('../model/doctor-model');
 
 router.get('/patient/dashboard', authMiddleware, async (req, res) => {
     try {
@@ -30,6 +31,21 @@ router.get('/admin/dashboard', authMiddleware, async (req, res) => {
         }
 
         res.json({ msg: 'Welcome to dashboard', admin });
+    } catch (error) {
+        res.status(500).json({ msg: 'Server error', error: error.message });
+    }
+});
+
+
+router.get('/doctor/dashboard', authMiddleware, async (req, res) => {
+    try {
+        const doctor = await DoctorModel.findById(req.user.id)
+
+        if (!doctor) {
+            return res.status(404).json({ msg: 'Doctor not found' });
+        }
+
+        res.json({ msg: 'Welcome to dashboard', doctor });
     } catch (error) {
         res.status(500).json({ msg: 'Server error', error: error.message });
     }

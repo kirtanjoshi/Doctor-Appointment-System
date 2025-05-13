@@ -1,174 +1,613 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save } from 'lucide-react';
+
+
+// import React, { useState, useEffect } from "react";
+// import { useParams, useNavigate } from "react-router-dom";
+// import { FaUpload } from "react-icons/fa";
+
+// const daysOfWeek = [
+//   "Sunday",
+//   "Monday",
+//   "Tuesday",
+//   "Wednesday",
+//   "Thursday",
+//   "Friday",
+//   "Saturday",
+// ];
+
+// const specializationList = [
+//   "Cardiologist",
+//   "Neurologist",
+//   "Pediatrician",
+//   "Dermatologist",
+//   "Orthopedic",
+//   "Gynecologist",
+//   "Psychiatrist",
+//   "Dentist",
+// ];
+
+// function DoctorEdit() {
+//   const { id } = useParams();
+//   const navigate = useNavigate();
+//   const [doctor, setDoctor] = useState(null);
+//   const [profilePic, setProfilePic] = useState(null);
+//   const [availability, setAvailability] = useState([]);
+//   const [newSlot, setNewSlot] = useState({ day: "", timeSlot: "" });
+
+//   useEffect(() => {
+//     const fetchDoctor = async () => {
+//       try {
+//         const res = await fetch(`http://localhost:4000/api/doctors/${id}`);
+//         const data = await res.json();
+//         setDoctor(data);
+//          setAvailability(data.availability || []);
+//       } catch (err) {
+//         console.error("Failed to fetch doctor:", err);
+//       }
+//     };
+//     fetchDoctor();
+//   }, [id]);
+
+//   const handleInputChange = (e) => {
+//     const { name, value } = e.target;
+//     setDoctor((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   const handleImageChange = (e) => {
+//     const file = e.target.files[0];
+//     if (file) setProfilePic(file);
+//   };
+
+//   const handleAddSlot = () => {
+//     const { day, timeSlot } = newSlot;
+//     if (!day || !timeSlot) return alert("Select both day and time");
+
+//     const formattedTime = new Date(`1970-01-01T${timeSlot}`).toLocaleTimeString(
+//       [],
+//       {
+//         hour: "2-digit",
+//         minute: "2-digit",
+//         hour12: true,
+//       }
+//     );
+
+//     const updated = [...availability];
+//     const existing = updated.find((a) => a.day === day);
+
+//     if (existing) {
+//       if (!existing.timeSlot.includes(formattedTime)) {
+//         existing.timeSlot.push(formattedTime);
+//       }
+//     } else {
+//       updated.push({ day, timeSlot: [formattedTime] });
+//     }
+
+//     setAvailability(updated);
+//     setNewSlot({ day: "", timeSlot: "" });
+//   };
+ 
+//   const handleRemoveSlot = (day, timeToRemove) => {
+//     const updated = availability
+//       .map((slot) => {
+//         if (slot.day === day) {
+//           // Flatten and filter time slots
+//           const flattened = slot.timeSlot
+//             .flat()
+//             .filter((t) => t !== timeToRemove);
+//           // Return updated slot if time slots still exist
+//           return flattened.length > 0
+//             ? { ...slot, timeSlot: [flattened] }
+//             : null;
+//         }
+//         return slot;
+//       })
+//       .filter((slot) => slot !== null); // remove empty day slots
+//     setAvailability(updated);
+//   };
+
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     const formData = new FormData();
+//     for (const key in doctor) {
+//       if (key !== "availability") formData.append(key, doctor[key]);
+//     }
+//     formData.append("availability", JSON.stringify(availability));
+//     if (profilePic) formData.append("profilePic", profilePic);
+
+//     try {
+//       const res = await fetch(
+//         `http://localhost:4000/api/doctors/update/${id}`,
+//         {
+//           method: "PUT",
+//           body: formData,
+//         }
+//       );
+
+//       if (res.ok) {
+//         alert("Doctor updated successfully");
+//         navigate("/admin/doctors");
+//       } else {
+//         const err = await res.json();
+//         alert(err.message || "Update failed");
+//       }
+//     } catch (err) {
+//       console.error("Update error:", err);
+//       alert("Something went wrong");
+//     }
+//   };
+
+//   if (!doctor) return <div className="p-10 text-center">Loading...</div>;
+
+//   return (
+//     <div className="max-w-4xl mx-auto p-8 bg-white rounded shadow">
+//       <h2 className="text-2xl font-bold mb-6">Edit Doctor</h2>
+//       <form onSubmit={handleSubmit} className="space-y-6">
+//         <div className="flex flex-col items-center">
+//           <label className="relative w-[100px] h-[100px] bg-gray-200 rounded-full overflow-hidden cursor-pointer">
+//             {profilePic ? (
+//               <img
+//                 src={URL.createObjectURL(profilePic)}
+//                 alt="Preview"
+//                 className="w-full h-full object-cover"
+//               />
+//             ) : doctor.profilePic ? (
+//               <img
+//                 src={doctor.profilePic}
+//                 alt="Doctor"
+//                 className="w-full h-full object-cover"
+//               />
+//             ) : (
+//               <div className="flex flex-col items-center justify-center h-full text-sm text-gray-500">
+//                 <FaUpload className="mb-1" /> Upload
+//               </div>
+//             )}
+//             <input
+//               type="file"
+//               onChange={handleImageChange}
+//               className="absolute inset-0 opacity-0"
+//             />
+//           </label>
+//         </div>
+
+//         {["fullName", "email", "password", "qualifications", "fee"].map(
+//           (key) => (
+//             <div key={key}>
+//               <label className="block text-gray-600 mb-1">
+//                 {key.charAt(0).toUpperCase() + key.slice(1)}
+//               </label>
+//               <input
+//                 type={key === "fee" ? "number" : "text"}
+//                 name={key}
+//                 value={doctor[key] || ""}
+//                 onChange={handleInputChange}
+//                 className="w-full border rounded px-3 py-2"
+//                 required
+//               />
+//             </div>
+//           )
+//         )}
+
+//         <div>
+//           <label className="block text-gray-600 mb-1">Specialization</label>
+//           <select
+//             name="specialization"
+//             value={doctor.specialization}
+//             onChange={handleInputChange}
+//             className="w-full border rounded px-3 py-2"
+//             required
+//           >
+//             <option value="">Select</option>
+//             {specializationList.map((spec) => (
+//               <option key={spec} value={spec}>
+//                 {spec}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div>
+//           <h3 className="text-lg font-semibold mb-2">Availability</h3>
+//           <div className="flex gap-3 mb-4">
+//             <select
+//               value={newSlot.day}
+//               onChange={(e) => setNewSlot({ ...newSlot, day: e.target.value })}
+//               className="border px-3 py-2 rounded"
+//             >
+//               <option value="">Day</option>
+//               {daysOfWeek.map((day) => (
+//                 <option key={day} value={day}>
+//                   {day}
+//                 </option>
+//               ))}
+//             </select>
+//             <input
+//               type="time"
+//               value={newSlot.timeSlot}
+//               onChange={(e) =>
+//                 setNewSlot({ ...newSlot, timeSlot: e.target.value })
+//               }
+//               className="border px-3 py-2 rounded"
+//             />
+//             <button
+//               type="button"
+//               onClick={handleAddSlot}
+//               className="bg-blue-500 text-white px-4 py-2 rounded"
+//             >
+//               Add
+//             </button>
+//           </div>
+
+//           {/* <div className="mt-4 flex flex-col gap-2">
+//             {availability.map((slot, idx) => (
+//               <div
+//                 key={idx}
+//                 className="bg-blue-100 text-blue-800 px-4 py-2 rounded text-sm"
+//               >
+//                 <strong>{slot.day}</strong>:{" "}
+//                 {slot.timeSlot.map((time, i) => (
+//                   <span
+//                     key={i}
+//                     className="inline-flex items-center mr-2 bg-white border border-blue-300 rounded px-2 py-1"
+//                   >
+//                     {time}
+//                     <button
+//                       type="button"
+//                       className="ml-1 text-red-500 hover:text-red-700"
+//                       onClick={() => handleRemoveSlot(slot.day, time)}
+//                       title="Remove"
+//                     >
+//                       ×
+//                     </button>
+//                   </span>
+//                 ))}
+//               </div>
+//             ))}
+//           </div> */}
+
+//           <div className="mt-4 flex flex-col gap-2">
+//             {availability.map((slot, idx) => (
+//               <div
+//                 key={idx}
+//                 className="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm"
+//               >
+//                 <div className="font-semibold mb-2">{slot.day}:</div>
+//                 <div className="flex flex-wrap gap-2">
+//                   {(Array.isArray(slot.timeSlot[0])
+//                     ? slot.timeSlot.flat()
+//                     : slot.timeSlot
+//                   ).map((time, i) => (
+//                     <span
+//                       key={i}
+//                       className="bg-white border border-blue-300 text-blue-700 px-3 py-1 rounded-full inline-flex items-center"
+//                     >
+//                       {time}
+//                       <button
+//                         type="button"
+//                         className="ml-2 text-red-500 hover:text-red-700"
+//                         onClick={() => handleRemoveSlot(slot.day, time)}
+//                         title="Remove"
+//                       >
+//                         ×
+//                       </button>
+//                     </span>
+//                   ))}
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+
+//         <div className="text-right">
+//           <button
+//             type="submit"
+//             className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700"
+//           >
+//             Save Changes
+//           </button>
+//         </div>
+//       </form>
+//     </div>
+//   );
+// }
+
+// export default DoctorEdit;
+
+
+
+
+
+
+
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { FaUpload } from "react-icons/fa";
+
+const daysOfWeek = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+const specializationList = [
+  "Cardiologist",
+  "Neurologist",
+  "Pediatrician",
+  "Dermatologist",
+  "Orthopedic",
+  "Gynecologist",
+  "Psychiatrist",
+  "Dentist",
+];
 
 function DoctorEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [doctor, setDoctor] = useState(null);
-  const [loading, setLoading] = useState(true);
-  
+  const [profilePic, setProfilePic] = useState(null);
+  const [availability, setAvailability] = useState([]);
+  const [newSlot, setNewSlot] = useState({ day: "", timeSlot: "" });
+
   useEffect(() => {
-    if (id) {
-      const doctorData = getDoctor(id);
-      if (doctorData) {
-        setDoctor(doctorData);
+    const fetchDoctor = async () => {
+      try {
+        const res = await fetch(`http://localhost:4000/api/doctors/${id}`);
+        const data = await res.json();
+        setDoctor(data);
+        setAvailability(data.availability || []);
+      } catch (err) {
+        console.error("Failed to fetch doctor:", err);
       }
-      setLoading(false);
-    }
+    };
+    fetchDoctor();
   }, [id]);
-  
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   if (doctor) {
-  //     setDoctor({ ...doctor, [name]: value });
-  //   }
-  // };
-  
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   alert(`Doctor ${doctor?.name} information updated!`);
-  //   navigate('/doctors');
-  // };
-  
-  if (loading) {
-    return <div className="flex items-center justify-center h-64">Loading...</div>;
-  }
-  
-  if (!doctor) {
-    return (
-      <div className="text-center py-10">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Doctor Not Found</h2>
-        <button 
-          onClick={() => navigate('/doctors')}
-          className="btn btn-primary"
-        >
-          Back to Doctors
-        </button>
-      </div>
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setDoctor((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) setProfilePic(file);
+  };
+
+  const handleAddSlot = () => {
+    const { day, timeSlot } = newSlot;
+    if (!day || !timeSlot) return alert("Select both day and time");
+
+    const formattedTime = new Date(`1970-01-01T${timeSlot}`).toLocaleTimeString(
+      [],
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }
     );
-  }
-  
+
+    const updated = [...availability];
+    const existing = updated.find((a) => a.day === day);
+
+    if (existing) {
+      if (!existing.timeSlot.includes(formattedTime)) {
+        existing.timeSlot.push(formattedTime);
+      }
+    } else {
+      updated.push({ day, timeSlot: [formattedTime] });
+    }
+
+    setAvailability(updated);
+    setNewSlot({ day: "", timeSlot: "" });
+  };
+
+  const handleRemoveSlot = (day, timeToRemove) => {
+    const updated = availability
+      .map((slot) => {
+        if (slot.day === day) {
+          const flattened = slot.timeSlot
+            .flat()
+            .filter((t) => t !== timeToRemove);
+          return flattened.length > 0
+            ? { ...slot, timeSlot: [flattened] }
+            : null;
+        }
+        return slot;
+      })
+      .filter((slot) => slot !== null);
+    setAvailability(updated);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    for (const key in doctor) {
+      if (key !== "availability") formData.append(key, doctor[key]);
+    }
+    formData.append("availability", JSON.stringify(availability));
+    if (profilePic) formData.append("profilePic", profilePic);
+
+    try {
+      const res = await fetch(
+        `http://localhost:4000/api/doctors/update/${id}`,
+        {
+          method: "PUT",
+          body: formData,
+        }
+      );
+
+      if (res.ok) {
+        alert("Doctor updated successfully");
+        navigate("/admin/doctors");
+      } else {
+        const err = await res.json();
+        alert(err.message || "Update failed");
+      }
+    } catch (err) {
+      console.error("Update error:", err);
+      alert("Something went wrong");
+    }
+  };
+
+  if (!doctor)
+    return <div className="p-10 text-center text-gray-600">Loading...</div>;
+
   return (
-    // <div className="space-y-6">
-    //   <div className="flex items-center gap-4">
-    //     <button
-    //       onClick={() => navigate('/doctors')}
-    //       className="p-2 rounded-full hover:bg-gray-100"
-    //     >
-    //       <ArrowLeft className="h-5 w-5" />
-    //     </button>
-    //     <h1 className="text-3xl font-bold text-gray-800">Edit Doctor Profile</h1>
-    //   </div>
-      
-    //   <form onSubmit={handleSubmit} className="edit-form max-w-4xl">
-    //     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    //       <div className="form-group">
-    //         <label htmlFor="name" className="form-label">Full Name</label>
-    //         <input
-    //           type="text"
-    //           id="name"
-    //           name="name"
-    //           value={doctor.name}
-    //           onChange={handleChange}
-    //           className="form-input"
-    //           required
-    //         />
-    //       </div>
-          
-    //       <div className="form-group">
-    //         <label htmlFor="specialty" className="form-label">Specialty</label>
-    //         <select
-    //           id="specialty"
-    //           name="specialty"
-    //           value={doctor.specialty}
-    //           onChange={handleChange}
-    //           className="form-input"
-    //           required
-    //         >
-    //           <option value="">Select Specialty</option>
-    //           <option value="Cardiology">Cardiology</option>
-    //           <option value="Dermatology">Dermatology</option>
-    //           <option value="Neurology">Neurology</option>
-    //           <option value="Pediatrics">Pediatrics</option>
-    //           <option value="Orthopedics">Orthopedics</option>
-    //           <option value="Gynecology">Gynecology</option>
-    //           <option value="Ophthalmology">Ophthalmology</option>
-    //           <option value="Psychiatry">Psychiatry</option>
-    //         </select>
-    //       </div>
-          
-    //       <div className="form-group">
-    //         <label htmlFor="email" className="form-label">Email</label>
-    //         <input
-    //           type="email"
-    //           id="email"
-    //           name="email"
-    //           value={doctor.email}
-    //           onChange={handleChange}
-    //           className="form-input"
-    //           required
-    //         />
-    //       </div>
-          
-    //       <div className="form-group">
-    //         <label htmlFor="phone" className="form-label">Phone</label>
-    //         <input
-    //           type="tel"
-    //           id="phone"
-    //           name="phone"
-    //           value={doctor.phone}
-    //           onChange={handleChange}
-    //           className="form-input"
-    //           required
-    //         />
-    //       </div>
-          
-    //       <div className="form-group">
-    //         <label htmlFor="experience" className="form-label">Experience (years)</label>
-    //         <input
-    //           type="number"
-    //           id="experience"
-    //           name="experience"
-    //           value={doctor.experience}
-    //           onChange={handleChange}
-    //           className="form-input"
-    //           min="0"
-    //         />
-    //       </div>
-    //     </div>
-        
-    //     <div className="form-group">
-    //       <label htmlFor="address" className="form-label">Address</label>
-    //       <textarea
-    //         id="address"
-    //         name="address"
-    //         value={doctor.address}
-    //         onChange={handleChange}
-    //         className="form-input"
-    //         rows={3}
-    //       />
-    //     </div>
-        
-    //     <div className="flex justify-end gap-4 mt-8">
-    //       <button
-    //         type="button"
-    //         onClick={() => navigate('/doctors')}
-    //         className="btn bg-gray-200 text-gray-800 hover:bg-gray-300"
-    //       >
-    //         Cancel
-    //       </button>
-    //       <button
-    //         type="submit"
-    //         className="btn btn-primary flex items-center gap-2"
-    //       >
-    //         <Save className="h-5 w-5" />
-    //         <span>Save Changes</span>
-    //       </button>
-    //     </div>
-    //   </form>
-    // </div>
-    <></>
+    <div className="max-w-5xl mx-auto p-8 bg-white rounded-2xl shadow-md mt-8">
+      <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">
+        Edit Doctor Details
+      </h2>
+
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Profile Image Upload */}
+        <div className="flex justify-center">
+          <label className="relative w-28 h-28 bg-gray-100 rounded-full overflow-hidden shadow-md cursor-pointer hover:ring-2 hover:ring-blue-300 transition">
+            {profilePic ? (
+              <img
+                src={URL.createObjectURL(profilePic)}
+                alt="Preview"
+                className="w-full h-full object-cover"
+              />
+            ) : doctor.profilePic ? (
+              <img
+                src={doctor.profilePic}
+                alt="Doctor"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-gray-400 text-sm">
+                <FaUpload className="text-lg mb-1" /> Upload
+              </div>
+            )}
+            <input
+              type="file"
+              onChange={handleImageChange}
+              className="absolute inset-0 opacity-0"
+            />
+          </label>
+        </div>
+
+        {/* Doctor Information Inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {["fullName", "email", "password", "qualifications", "fee"].map(
+            (key) => (
+              <div key={key}>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                </label>
+                <input
+                  type={key === "fee" ? "number" : "text"}
+                  name={key}
+                  value={doctor[key] || ""}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                  required
+                />
+              </div>
+            )
+          )}
+        </div>
+
+        {/* Specialization Dropdown */}
+        <div>
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Specialization
+          </label>
+          <select
+            name="specialization"
+            value={doctor.specialization}
+            onChange={handleInputChange}
+            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            required
+          >
+            <option value="">Select specialization</option>
+            {specializationList.map((spec) => (
+              <option key={spec} value={spec}>
+                {spec}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Availability Section */}
+        <div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">
+            Availability
+          </h3>
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <select
+              value={newSlot.day}
+              onChange={(e) => setNewSlot({ ...newSlot, day: e.target.value })}
+              className="border border-gray-300 rounded-lg p-3 w-full md:w-1/3 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            >
+              <option value="">Select Day</option>
+              {daysOfWeek.map((day) => (
+                <option key={day} value={day}>
+                  {day}
+                </option>
+              ))}
+            </select>
+
+            <input
+              type="time"
+              value={newSlot.timeSlot}
+              onChange={(e) =>
+                setNewSlot({ ...newSlot, timeSlot: e.target.value })
+              }
+              className="border border-gray-300 rounded-lg p-3 w-full md:w-1/3 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            />
+
+            <button
+              type="button"
+              onClick={handleAddSlot}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-5 py-3 w-full md:w-auto transition"
+            >
+              Add Slot
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {availability.map((slot, idx) => (
+              <div key={idx} className="bg-gray-100 p-4 rounded-lg">
+                <div className="font-medium text-gray-700 mb-2">{slot.day}</div>
+                <div className="flex flex-wrap gap-2">
+                  {(Array.isArray(slot.timeSlot[0])
+                    ? slot.timeSlot.flat()
+                    : slot.timeSlot
+                  ).map((time, i) => (
+                    <span
+                      key={i}
+                      className="bg-white border border-gray-300 text-gray-700 px-3 py-1 rounded-full inline-flex items-center"
+                    >
+                      {time}
+                      <button
+                        type="button"
+                        className="ml-2 text-red-500 hover:text-red-700"
+                        onClick={() => handleRemoveSlot(slot.day, time)}
+                        title="Remove"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded-lg transition"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 

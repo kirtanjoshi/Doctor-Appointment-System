@@ -25,7 +25,9 @@ if (typeof availability === 'string') {
     } catch (err) {
         return res.status(400).json({ message: "Invalid availability format" });
     }
-}
+        }
+        
+        console.log(JSON.stringify(availability));
 
 
         let imageUrl = ''; // Default
@@ -111,47 +113,72 @@ const getAllDoctors = async (req, res) =>
 }
 
 const updateDoctor = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { email, fullName, fee, specialization, qualifications, availability, experience } = req.body;
+  try {
+    const { id } = req.params;
+    const {
+      email,
+      fullName,
+      specialization,
+      qualifications,
+      fee,
+      experience,
+      availability
+    } = req.body;
 
-        const doctor = await DoctorModel.findById(id);
-        if (!doctor) {
-            return res.status(404).json({ message: "Doctor not found" });
-        }
-
-        // Update fields
-        if (email) doctor.email = email;
-        if (fullName) doctor.fullName = fullName;
-        if (fee) doctor.fee = fee;
-        if (specialization) doctor.specialization = specialization;
-        if (qualifications) doctor.qualifications = qualifications;
-        // if (availability) doctor.availability = availability;
-        if (availability) {
-    doctor.availability = typeof availability === 'string' ? JSON.parse(availability) : availability;
-}
-
-        if (experience) doctor.experience = experience;
-
-        // Handle profile picture update
-        if (req.file) {
-            const filePath = req.file.path;
-            const result = await uploadCloudinary(filePath, {
-                folder: 'doctors',
-            });
-            doctor.profilePic = result.secure_url;
-            await fs.unlink(filePath);
-        }
-
-        await doctor.save();
-        res.json({ message: "Doctor updated successfully", doctor });
-    } catch (error) {
-        if (req.file) {
-            await fs.unlink(req.file.path).catch(err => console.error('Failed to delete local file:', err));
-        }
-        res.status(500).json({ message: 'Server error', error: error.message });
+    let imageUrl;
+    if (req.file) {
+      const filePath = req.file.path;
+      const result = await uploadCloudinary(filePath, {
+        folder: "doctors",
+      });
+      imageUrl = result.secure_url;
+      await fs.unlink(filePath); // Delete temp file
     }
+
+    // Build update data conditionally
+    const updateData = {};
+    if (imageUrl) updateData.profilePic = imageUrl;
+    if (email) updateData.email = email;
+    if (fullName) updateData.fullName = fullName;
+    if (specialization) updateData.specialization = specialization;
+    if (qualifications) updateData.qualifications = qualifications;
+    if (fee) updateData.fee = fee;
+    if (experience) updateData.experience = experience;
+
+    if (availability) {
+      try {
+        updateData.availability =
+          typeof availability === "string"
+            ? JSON.parse(availability)
+            : availability;
+      } catch (err) {
+        return res
+          .status(400)
+          .json({ message: "Invalid availability format" });
+      }
+    }
+
+    const updatedDoctor = await DoctorModel.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    if (!updatedDoctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Doctor updated successfully", doctor: updatedDoctor });
+  } catch (error) {
+    if (req.file) {
+      await fs
+        .unlink(req.file.path)
+        .catch((err) => console.error("Failed to delete local file:", err));
+    }
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 };
+
 
 const getDoctorById = async (req, res) => {
 
@@ -186,4 +213,4 @@ const deleteDoctor = async (req, res) => {
     }
 };
 
-module.exports = { createDoctorAccount, loginDoctor, updateDoctor  , getAllDoctors , getDoctorById};
+module.exports = { createDoctorAccount, loginDoctor, updateDoctor  , getAllDoctors , getDoctorById, deleteDoctor};

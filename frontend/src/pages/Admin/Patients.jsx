@@ -65,13 +65,7 @@ function Patients() {
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">Manage Patients</h1>
-        <button
-          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg shadow"
-          onClick={() => setShowAddModal(true)}
-        >
-          <Plus className="h-5 w-5" />
-          <span>Add Patient</span>
-        </button>
+      
       </div>
 
       <div className="flex items-center bg-white rounded-lg border border-gray-300 px-3 py-2 w-full max-w-md">
@@ -93,7 +87,7 @@ function Patients() {
               <th className="p-3 border-b">Email</th>
               <th className="p-3 border-b">Phone</th>
               <th className="p-3 border-b">Gender</th>
-              <th className="p-3 border-b">Blood Group</th>
+          
               <th className="p-3 border-b">Actions</th>
             </tr>
           </thead>
@@ -111,7 +105,7 @@ function Patients() {
                   <td className="p-3">{patient.email}</td>
                   <td className="p-3">{patient.phone}</td>
                   <td className="p-3 capitalize">{patient.gender}</td>
-                  <td className="p-3">{patient.bloodGroup || "Not set"}</td>
+       
                   <td className="p-3 flex gap-2">
                     <EditButton
                       onClick={() => navigate(`/patients/${patient.id}`)}

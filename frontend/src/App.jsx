@@ -18,7 +18,9 @@ import AppLayout from "./pages/AppLayout";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import DoctorDashboard from "./pages/Doctor/DoctorDashboard";
+import Sidebar from "./pages/Doctor/Sidebar";
+import DoctorLayout from "./pages/Doctor/DoctorLayout";
 
 function App() {
   return (
@@ -28,6 +30,7 @@ function App() {
           {/* Public Route without Sidebar */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="doctors" element={<DoctorDashboard />} />
           <Route path="/auth/signUp" element={<SignUpPage />} />
           <Route path="/doctors/:id" element={<AppointmentBooking />} />
           {/* Protected Routes with Sidebar and Layout */}
@@ -36,9 +39,18 @@ function App() {
           <Route path="/admin" element={<Layout />}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="doctors" element={<Doctors />} />
-            <Route path="doctors/:id" element={<DoctorEdit />} />
+            <Route path="doctors/edit/:id" element={<DoctorEdit />} />
             <Route path="patients" element={<Patients />} />
             <Route path="patients/:id" element={<PatientEdit />} />
+          </Route>
+
+          {/* Admin Routes */}
+          <Route path="/doctor" element={<DoctorLayout />}>
+            <Route path="dashboard" element={<DoctorDashboard />} />
+            {/* <Route path="doctors" element={<Doctors />} />
+            <Route path="doctors/:id" element={<DoctorEdit />} />
+            <Route path="patients" element={<Patients />} />
+            <Route path="patients/:id" element={<PatientEdit />} /> */}
           </Route>
 
           {/* <Route
