@@ -12,6 +12,8 @@ import {
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 
@@ -27,10 +29,13 @@ const Sidebar =  () => {
     { path: "/patient/find-doctors", name: "Find Doctors", icon: UserGroupIcon },
     { path: "/patient/settings", name: "Settings", icon: Cog6ToothIcon },
   ];
-  const { user, loading } = useContext(AuthContext); 
+  const { user, loading  , logoutUser} = useContext(AuthContext); 
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Add logout logic here
+    logoutUser();   
+    navigate("/login");
+     toast.success("Logged out successfully");
     console.log("Logging out...");
   };
 

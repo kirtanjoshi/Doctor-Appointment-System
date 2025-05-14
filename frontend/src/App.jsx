@@ -19,8 +19,8 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DoctorDashboard from "./pages/Doctor/DoctorDashboard";
-import Sidebar from "./pages/Doctor/Sidebar";
-import DoctorLayout from "./pages/Doctor/DoctorLayout";
+import Sidebar from "./components/Doctor/Sidebar";
+import DoctorLayout from "./components/Doctor/DoctorLayout";
 
 function App() {
   return (

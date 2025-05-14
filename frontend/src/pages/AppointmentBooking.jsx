@@ -12,6 +12,7 @@ import {
 
 import { useContext } from "react";
 import { AuthContext } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const AppointmentBooking = () => {
   const { id } = useParams();
@@ -21,9 +22,10 @@ const AppointmentBooking = () => {
   const [visitType, setVisitType] = useState("New Patient Visit");
   const [visitReason, setVisitReason] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 2)); // Start with March 2025
+  const [currentMonth, setCurrentMonth] = useState(new Date()); // ✅ Dynamic current month
 
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -38,64 +40,57 @@ const AppointmentBooking = () => {
     fetchDoctor();
   }, [id]);
 
-
-  
-  
   const bookAppointment = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    console.warn("No token found. Cannot book appointment.");
-    return;
-  }
-
-  console.log(token)
-  console.log(doctor._id)
-  console.log(user._id)
-  console.log(selectedDate)
-  console.log(selectedTime)
-  console.log(visitType)
-  console.log(visitReason)
-
-
-  try {
-    const response = await fetch(
-      "http://localhost:4000/api/appointments/book",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          doctorId: doctor._id,
-          patientId: user._id,
-          appointmentDate: selectedDate.toISOString(),
-          appointmentTime: selectedTime,
-          status: "Pending",
-          visitType: visitType,
-          visitReason: visitReason,
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Booking failed:", data.message || response.statusText);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.warn("No token found. Cannot book appointment.");
       return;
     }
-    setIsModalOpen(true);
-    console.log("Appointment booked successfully:", data);
-  } catch (err) {
-    console.error("Error booking appointment:", err);
-  }
-};
 
-  
+    console.log(token);
+    console.log(doctor._id);
+    console.log(user._id);
+    console.log(selectedDate);
+    console.log(selectedTime);
+    console.log(visitType);
+    console.log(visitReason);
+
+    try {
+      const response = await fetch(
+        "http://localhost:4000/api/appointments/book",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            doctorId: doctor._id,
+            appointmentDate: selectedDate.toISOString(),
+            appointmentTime: selectedTime,
+            visitType,
+            visitReason,
+          }),
+        }
+      );
+      console.log(response);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Booking failed:", data.message || response.statusText);
+        return;
+      }
+      setIsModalOpen(true);
+      console.log("Appointment booked successfully:", data);
+      navigate("patient/dashboard");
+    } catch (err) {
+      console.error("Error booking appointment:", err);
+    }
+  };
+
   const handleConfirmBooking = () => {
     bookAppointment();
-
-
   };
 
   const generateCalendarDays = () => {
@@ -176,7 +171,7 @@ const AppointmentBooking = () => {
               {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
                 <div
                   key={day}
-                  className="text-center text-[10px] sm:text-xs font-medium text-gray-500"
+                  className="ml-2 text-[10px] sm:text-xs font-medium text-gray-500"
                 >
                   {day}
                 </div>

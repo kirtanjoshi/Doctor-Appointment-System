@@ -52,6 +52,7 @@ const UserProvider = ({ children }) => {
     await fetchUser();
   };
 
+
   const logoutUser = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");

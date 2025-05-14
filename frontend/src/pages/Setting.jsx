@@ -15,16 +15,16 @@ function Settings() {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [formData, setFormData] = useState({
-    username: user.username || "",
-    email: user.email || "",
-    fullName: user.fullName || "",
-    phone: user.phone || "",
-    age: user.age || "",
-    gender: user.gender || "",
+    username: user?.username || "",
+    email: user?.email || "",
+    fullName: user?.fullName || "",
+    phone: user?.phone || "",
+    age: user?.age || "",
+    gender: user?.gender || "",
   });
 
   const [profileImage, setProfileImage] = useState(
-    user.profilePic || "https://via.placeholder.com/80"
+    user?.profilePic || "https://via.placeholder.com/80"
   );
 
   const handleChange = (e) => {
@@ -94,7 +94,7 @@ function Settings() {
     }),
     onSubmit: async (values) => {
       const formDataToSend = new FormData();
-      formDataToSend.append("username", formData.username);
+      formDataToSend.append("username", formData?.username);
       formDataToSend.append("email", formData.email);
       formDataToSend.append("fullName", formData.fullName);
       formDataToSend.append("phone", formData.phone);
@@ -193,7 +193,7 @@ function Settings() {
               <InputField
                 label="Username"
                 name="username"
-                value={formData.username}
+                value={formData?.username}
                 onChange={handleChange}
               />
               <InputField

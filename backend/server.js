@@ -1,59 +1,10 @@
-// const express = require('express');
-// const mongoose = require('mongoose');
-// const dotenv = require('dotenv').config();
-// const authRoutes = require('./src/routes/authroutes');
-// const protectedRoutes = require('./src/routes/protectedRoutes');
-// const cors = require('cors'); // Import cors
-// const app = express();
-// const port = process.env.PORT;
-// const db = process.env.MONGO_URI
-
-// console.log(db)
-// app.use(express.json());
-
-
-
-// app.get("/", (req, res) => {
-//     res.send("Hello World");
-// })
-// // Enable CORS
-// app.use(cors({
-//     origin: 'http://127.0.0.1:5500/backend/index2.html', // Allow requests from this origin (your frontend)
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
-//     allowedHeaders: ['Content-Type', 'Authorization'] ,// Allowed headers
-//     credentials: true,
-// }));
-  
-// app.use("/api/auth" , authRoutes );
-// app.use('/api/protected', protectedRoutes);
-
-
-
-
-// const connectDB = async () => {
-//     try {
-//         await mongoose.connect(db);
-
-//         console.log("✅ MongoDB Connected Successfully");
-//     } catch (error) {
-//         console.error("❌ MongoDB Connection Error:", error.message);
-//         process.exit(1);
-//     }
-// };
-
-// connectDB();
-
-
-// app.listen(port, () => console.log(`🚀 Server running on http://localhost:${port}`));
-
-
-
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const http = require('http'); // ✅ new
+const { Server } = require("socket.io");
 
-// Load environment variables
 dotenv.config();
 
 const authRoutes = require('./src/routes/authroutes');
@@ -66,18 +17,66 @@ const app = express();
 const port = process.env.PORT || 5000;
 const db = process.env.MONGO_URI;
 
+
+
+// ✅ Create HTTP server
+const server = http.createServer(app);
+
+// ✅ Setup socket.io with CORS
+const io = new Server(server, {
+  cors: {
+    origin: ['http://127.0.0.1:5500', 'http://localhost:5173', 'http://localhost:5175'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  },
+});
+
+app.use((req, res, next) => {
+  console.log("🧾 Incoming Body:", req.body);
+  next();
+});
+
+
+// ✅ Track connected users
+const connectedUsers = new Map();
+
+io.on('connection', (socket) => {
+  console.log('🟢 User connected:', socket.id);
+
+  socket.on('register', (userId) => {
+    connectedUsers.set(userId, socket.id);
+    console.log(`👤 Registered user ${userId} to socket ${socket.id}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('🔴 User disconnected:', socket.id);
+    for (const [userId, sockId] of connectedUsers.entries()) {
+      if (sockId === socket.id) {
+        connectedUsers.delete(userId);
+        break;
+      }
+    }
+  });
+});
+
+// ✅ Make socket objects available in routes
+app.set("io", io);
+app.set("connectedUsers", connectedUsers);
+
 // Middleware
 app.use(express.json());
 
-// Enable CORS for local frontend development
+// CORS
 app.use(cors({
-  origin: ['http://127.0.0.1:5500', 'http://localhost:5173','http://localhost:5175'],
+  origin: ['http://127.0.0.1:5500', 'http://localhost:5173', 'http://localhost:5175'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
 
-// Basic test route
+
+
+// Test route
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
@@ -85,9 +84,9 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/protected', protectedRoutes);
-app.use('/api/',doctorRoutes)
-app.use('/api/',patientRoutes)
-app.use('/api/appointments',bookAppointmentRoutes)
+app.use('/api/', doctorRoutes);
+app.use('/api/', patientRoutes);
+app.use('/api/appointments', bookAppointmentRoutes);
 
 // Connect to MongoDB and start server
 const connectDB = async () => {
@@ -98,10 +97,13 @@ const connectDB = async () => {
     });
 
     console.log('✅ MongoDB Connected Successfully');
-    app.listen(port, () => {
+
+    // ✅ Start server with socket support
+    server.listen(port, () => {
       console.log(`🚀 Server running at http://localhost:${port}`);
     });
-  } catch (error) { 
+
+  } catch (error) {
     console.error('❌ MongoDB Connection Error:', error.message);
     process.exit(1);
   }

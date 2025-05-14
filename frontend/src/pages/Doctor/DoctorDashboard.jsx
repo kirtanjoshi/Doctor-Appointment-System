@@ -1,7 +1,3 @@
-
-
-
-
 // import React, { useEffect, useState, useContext } from "react";
 // import { AuthContext } from "../../context/UserContext";
 // import {
@@ -10,17 +6,18 @@
 //   ClockIcon,
 //   CheckCircleIcon,
 //   XCircleIcon,
-//   MagnifyingGlassIcon,
 //   ChevronLeftIcon,
 //   ChevronRightIcon,
 //   UserCircleIcon,
 // } from "@heroicons/react/24/outline";
+// import { io } from "socket.io-client";
+// import {toast} from "react-toastify";
 
 // // Utility Components
 // function StatCard({ icon, value, label }) {
 //   return (
 //     <div className="rounded-xl border border-gray-100 p-4 text-center shadow-sm bg-white hover:shadow-md transition-all duration-300">
-//       <div className="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-2">
+//       <div className="w-10 h-10 bg-[#dff3f3] rounded-full flex items-center justify-center mx-auto mb-2">
 //         {icon}
 //       </div>
 //       <h3 className="text-lg font-bold text-gray-800">{value}</h3>
@@ -35,11 +32,19 @@
 //   const [appointments, setAppointments] = useState([]);
 //   const [currentMonth, setCurrentMonth] = useState(new Date());
 //   const [selectedDate, setSelectedDate] = useState(new Date());
+//   // 🔔 New: Notification State
+//  const [notifications, setNotifications] = useState(() => {
+//    const saved = localStorage.getItem("doctorNotifications");
+//    return saved ? JSON.parse(saved) : [];
+//  });
+//   useEffect(() => {
+//     localStorage.setItem("doctorNotifications", JSON.stringify(notifications));
+//   }, [notifications]);
+//   const [showNotifications, setShowNotifications] = useState(false);
 
 //   const today = new Date().toDateString();
 //   const nextSlot = "9:00 AM";
 
-//   // Calendar Utilities
 //   const getDaysInMonth = (year, month) =>
 //     new Date(year, month + 1, 0).getDate();
 //   const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
@@ -76,7 +81,6 @@
 //     setCurrentMonth(
 //       new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
 //     );
-
 //   const nextMonth = () =>
 //     setCurrentMonth(
 //       new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
@@ -96,7 +100,7 @@
 //     const fetchAppointments = async () => {
 //       try {
 //         const res = await fetch(
-//           `http://localhost:4000/api/appointments/doctor/${user._id}`
+//           `http://localhost:4000/api/appointments/doctor/${user?._id}`
 //         );
 //         const data = await res.json();
 //         setAppointments(data);
@@ -108,18 +112,74 @@
 //     fetchAppointments();
 //   }, [user]);
 
-//   // Early Loading or User Null Return
+//   // 🔔 Real-time appointment notification using Socket.io
+//   useEffect(() => {
+//     if (!user?._id) return;
+
+//     const socket = io("http://localhost:4000");
+//     console.log("🔌 Connecting to socket server...");
+
+//     socket.emit("register", user._id);
+//     console.log("🧾 Registered doctor with socket:", user._id);
+
+//     socket.on("new-appointment", (data) => {
+//       console.log("📬 New appointment received via socket:", data);
+//       toast(data.message);
+//       setAppointments((prev) => [...prev, data.appointment]);
+//        setNotifications((prev) => [
+//          ...prev,
+//          { message: data.message, data: data.appointment, time: new Date() },
+//        ]);
+//     });
+
+//     return () => {
+//       console.log("🔌 Socket disconnected.");
+//       socket.disconnect();
+//     };
+//   }, [user?._id]);
+
+//   const handleCancelAppointment = async (appointmentId) => {
+//     try {
+//       const response = await fetch(
+//         "http://localhost:4000/api/appointments/cancel",
+//         {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({ appointmentId }),
+//         }
+//       );
+
+//       if (!response.ok) {
+//         throw new Error("Failed to cancel appointment");
+//       }
+
+//       const result = await response.json();
+//       console.log("Appointment cancelled:", result);
+
+//       // Optional: Refresh appointments list after cancel
+//       setAppointments((prev) =>
+//         prev.map((app) =>
+//           app._id === appointmentId ? { ...app, status: "Cancelled" } : app
+//         )
+//       );
+//     } catch (error) {
+//       console.error("Error cancelling appointment:", error);
+//     }
+//   };
+
 //   if (loading) {
 //     return (
-//       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-//         <p className="text-indigo-600 font-medium">Loading...</p>
+//       <div className="min-h-screen bg-[#dff3f3] flex items-center justify-center">
+//         <p className="text-teal-600 font-medium">Loading...</p>
 //       </div>
 //     );
 //   }
 
 //   if (!user) {
 //     return (
-//       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+//       <div className="min-h-screen bg-[#dff3f3] flex items-center justify-center">
 //         <p className="text-gray-500 font-medium">No user data found.</p>
 //       </div>
 //     );
@@ -128,28 +188,101 @@
 //   const calendarDays = generateCalendarDays();
 //   const weekdays = getWeekdays();
 
+// if (loading || !user) {
 //   return (
-//     <div className="min-h-screen bg-gray-50 p-6 space-y-6 text-sm">
-//       {/* Doctor Profile Card */}
+//     <div className="min-h-screen flex items-center justify-center bg-[#dff3f3]">
+//       <p className="text-gray-500">Loading user data...</p>
+//     </div>
+//   );
+// }
+
+//   return (
+//     <div className="min-h-screen p-6 space-y-6 text-sm">
+//       {/* 🔔 Notification Bell Icon */}
+//       <div className="flex justify-end">
+//         <div className="relative">
+//           <button
+//             onClick={() => setShowNotifications(!showNotifications)}
+//             className="relative p-2 rounded-full bg-white shadow hover:bg-[#dff3f3]"
+//           >
+//             <svg
+//               xmlns="http://www.w3.org/2000/svg"
+//               fill="none"
+//               viewBox="0 0 24 24"
+//               strokeWidth={1.5}
+//               stroke="currentColor"
+//               className="w-6 h-6 text-teal-600"
+//             >
+//               <path
+//                 strokeLinecap="round"
+//                 strokeLinejoin="round"
+//                 d="M14.25 17.25h.008v.008h-.008v-.008zm-4.5 0h.008v.008h-.008v-.008zm4.5 0A2.25 2.25 0 0112 19.5a2.25 2.25 0 01-2.25-2.25m4.5 0v-2.25a4.5 4.5 0 00-9 0v2.25m9 0H6.75"
+//               />
+//             </svg>
+//             {notifications.length > 0 && (
+//               <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full">
+//                 {notifications.length}
+//               </span>
+//             )}
+//           </button>
+
+//           {showNotifications && (
+//             <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg z-10 max-h-80 overflow-y-auto">
+//               <div className="p-3 border-b text-gray-700 font-semibold">
+//                 Notifications
+//               </div>
+//               {notifications.length === 0 ? (
+//                 <div className="p-3 text-sm text-gray-500">
+//                   No new notifications
+//                 </div>
+//               ) : (
+//                 notifications
+//                   .slice()
+//                   .reverse()
+//                   .map((notif, index) => (
+//                     <div
+//                       key={index}
+//                       className="p-3 border-b hover:bg-[#f5fdfd]"
+//                     >
+//                       <p className="text-sm text-gray-700">{notif.message}</p>
+//                       <p className="text-xs text-gray-400">
+//                         {notif.time}
+//                       </p>
+//                     </div>
+//                   ))
+//               )}
+//               {notifications.length > 0 && (
+//                 <button
+//                   onClick={() => setNotifications([])}
+//                   className="text-xs w-full text-right px-3 py-2 text-red-500 hover:underline"
+//                 >
+//                   Clear All
+//                 </button>
+//               )}
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//       {/* Profile */}
 //       <div className="bg-white shadow-md rounded-2xl p-6 flex flex-col lg:flex-row items-center gap-6">
 //         <div className="relative">
 //           {user?.profilePic ? (
 //             <img
 //               src={user.profilePic}
 //               alt="doctor"
-//               className="w-28 h-28 object-cover rounded-full border-4 border-indigo-100 shadow-sm"
+//               className="w-28 h-28 object-cover rounded-full border-4 border-[#dff3f3] shadow-sm"
 //             />
 //           ) : (
-//             <div className="w-28 h-28 rounded-full bg-indigo-100 flex items-center justify-center border-4 border-indigo-100 shadow-sm">
-//               <UserCircleIcon className="w-16 h-16 text-indigo-300" />
+//             <div className="w-28 h-28 rounded-full bg-[#dff3f3] flex items-center justify-center border-4 border-[#dff3f3] shadow-sm">
+//               <UserCircleIcon className="w-16 h-16 text-teal-300" />
 //             </div>
 //           )}
 //           <span className="absolute bottom-1 right-1 w-5 h-5 bg-teal-500 border-2 border-white rounded-full"></span>
 //         </div>
 
 //         <div className="text-center lg:text-left flex-1 space-y-1">
-//           <h2 className="text-xl font-bold text-gray-800">{user.fullName}</h2>
-//           <p className="text-indigo-600 font-medium">{user.specialization}</p>
+//           <h2 className="text-xl font-bold text-gray-800">{user?.fullName}</h2>
+//           <p className="text-teal-600 font-medium">{user.specialization}</p>
 //           <p className="text-gray-500 text-sm">Speaks: English, Nepali</p>
 //           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
 //             <span className="w-2 h-2 bg-teal-500 rounded-full mr-1"></span>
@@ -159,26 +292,26 @@
 
 //         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto">
 //           <StatCard
-//             icon={<MapPinIcon className="h-5 w-5 text-indigo-600" />}
+//             icon={<MapPinIcon className="h-5 w-5 text-teal-600" />}
 //             value={appointments.length}
 //             label="Total Patients"
 //           />
 //           <StatCard
-//             icon={<ClockIcon className="h-5 w-5 text-indigo-600" />}
+//             icon={<ClockIcon className="h-5 w-5 text-teal-600" />}
 //             value={nextSlot}
 //             label="Next Slot"
 //           />
 //           <StatCard
-//             icon={<CalendarDaysIcon className="h-5 w-5 text-indigo-600" />}
+//             icon={<CalendarDaysIcon className="h-5 w-5 text-teal-600" />}
 //             value={today}
 //             label="Today's Date"
 //           />
 //         </div>
 //       </div>
 
-//       {/* Calendar and Appointment Section */}
+//       {/* Main Section */}
 //       <div className="grid md:grid-cols-3 gap-6">
-//         {/* Today's Appointments */}
+//         {/* Appointments */}
 //         <div className="md:col-span-2 bg-white p-6 rounded-2xl shadow-md">
 //           <div className="flex justify-between items-center mb-6">
 //             <div>
@@ -189,7 +322,7 @@
 //                 Manage your schedule efficiently
 //               </p>
 //             </div>
-//             <span className="text-indigo-500 font-medium">
+//             <span className="text-teal-600 font-medium">
 //               {appointments.length} Total
 //             </span>
 //           </div>
@@ -211,8 +344,8 @@
 //                   <div className="flex items-center gap-4">
 //                     <img
 //                       src={app?.patientId?.profilePic || "P"}
-//                       className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold"
-//                     ></img>
+//                       className="w-10 h-10 rounded-full bg-[#dff3f3] flex items-center justify-center text-teal-600 font-bold"
+//                     />
 //                     <div>
 //                       <p className="font-medium text-gray-800">
 //                         {app?.patientId?.fullName}
@@ -226,7 +359,7 @@
 //                   <div className="text-sm">
 //                     <p className="text-gray-400 text-xs">Time</p>
 //                     <p className="font-medium text-gray-700">
-//                       {app.appointmentTime}
+//                       {/* {app.appointmentTime || "No time"} */}
 //                     </p>
 //                   </div>
 
@@ -244,7 +377,10 @@
 //                     <button className="w-8 h-8 rounded-full bg-teal-50 text-teal-600 hover:bg-teal-100">
 //                       <CheckCircleIcon className="w-5 h-5" />
 //                     </button>
-//                     <button className="w-8 h-8 rounded-full bg-red-50 text-red-600 hover:bg-red-100">
+//                     <button
+//                       onClick={() => handleCancelAppointment(app._id)}
+//                       className="w-8 h-8 rounded-full bg-red-50 text-red-600 hover:bg-red-100"
+//                     >
 //                       <XCircleIcon className="w-5 h-5" />
 //                     </button>
 //                   </div>
@@ -253,11 +389,12 @@
 //             )}
 //           </div>
 //         </div>
+
 //         {/* Calendar */}
 //         <div className="bg-white p-4 rounded-2xl shadow-md">
 //           <div className="flex justify-between items-center mb-4">
 //             <h3 className="text-sm font-bold text-gray-800">My Calendar</h3>
-//             <span className="text-xs text-white bg-indigo-500 px-2 py-1 rounded-full">
+//             <span className="text-xs text-white bg-teal-500 px-2 py-1 rounded-full">
 //               {new Date().toLocaleDateString("en-US", {
 //                 month: "short",
 //                 year: "numeric",
@@ -265,12 +402,11 @@
 //             </span>
 //           </div>
 
-//           <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl p-2">
-//             {/* Calendar Header */}
+//           <div className="bg-gradient-to-br from-[#dff3f3] to-white rounded-xl p-2">
 //             <div className="flex justify-between items-center mb-2">
 //               <button
 //                 onClick={prevMonth}
-//                 className="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow hover:bg-indigo-50"
+//                 className="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow hover:bg-[#dff3f3]"
 //               >
 //                 <ChevronLeftIcon className="w-3 h-3 text-gray-600" />
 //               </button>
@@ -279,13 +415,12 @@
 //               </span>
 //               <button
 //                 onClick={nextMonth}
-//                 className="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow hover:bg-indigo-50"
+//                 className="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow hover:bg-[#dff3f3]"
 //               >
 //                 <ChevronRightIcon className="w-3 h-3 text-gray-600" />
 //               </button>
 //             </div>
 
-//             {/* Weekdays */}
 //             <div className="grid grid-cols-7 mb-1">
 //               {weekdays.map((day) => (
 //                 <div
@@ -297,29 +432,29 @@
 //               ))}
 //             </div>
 
-//             {/* Days */}
 //             <div className="grid grid-cols-7 gap-1">
 //               {calendarDays.map((day, index) => (
 //                 <div
 //                   key={index}
 //                   onClick={() => handleDateClick(day)}
 //                   className={`text-xs h-7 flex items-center justify-center rounded-lg
-//                   ${!day.isCurrentMonth ? "text-gray-300" : "cursor-pointer"}
-//                   ${
-//                     day.isToday && !day.isSelected
-//                       ? "bg-indigo-100 text-indigo-700"
-//                       : ""
-//                   }
-//                   ${
-//                     day.isSelected
-//                       ? "bg-indigo-500 text-white font-semibold"
-//                       : ""
-//                   }
-//                   ${
-//                     day.isCurrentMonth && !day.isToday && !day.isSelected
-//                       ? "hover:bg-indigo-50"
-//                       : ""
-//                   }`}
+//                     ${!day.isCurrentMonth ? "text-gray-300" : "cursor-pointer"}
+//                     ${
+//                       day.isToday && !day.isSelected
+//                         ? "bg-[#dff3f3] text-teal-700"
+//                         : ""
+//                     }
+//                     ${
+//                       day.isSelected
+//                         ? "bg-teal-500 text-white font-semibold"
+//                         : ""
+//                     }
+//                     ${
+//                       day.isCurrentMonth && !day.isToday && !day.isSelected
+//                         ? "hover:bg-[#dff3f3]"
+//                         : ""
+//                     }
+//                   `}
 //                 >
 //                   {day.day}
 //                 </div>
@@ -344,7 +479,12 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   UserCircleIcon,
+  BellIcon,
+  BellAlertIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
+import { io } from "socket.io-client";
+import { toast } from "react-toastify";
 
 // Utility Components
 function StatCard({ icon, value, label }) {
@@ -359,12 +499,37 @@ function StatCard({ icon, value, label }) {
   );
 }
 
+// Format relative time for notifications
+function formatRelativeTime(date) {
+  const now = new Date();
+  const diff = now - new Date(date);
+
+  // Convert to appropriate time units
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  return `${days}d ago`;
+}
+
 // Main Component
 export default function DoctorDashboard() {
   const { user, loading } = useContext(AuthContext);
   const [appointments, setAppointments] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
+  // 🔔 Notification State
+  const [notifications, setNotifications] = useState(() => {
+    const saved = localStorage.getItem("doctorNotifications");
+    return saved ? JSON.parse(saved) : [];
+  });
+  useEffect(() => {
+    localStorage.setItem("doctorNotifications", JSON.stringify(notifications));
+  }, [notifications]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const today = new Date().toDateString();
   const nextSlot = "9:00 AM";
@@ -424,7 +589,7 @@ export default function DoctorDashboard() {
     const fetchAppointments = async () => {
       try {
         const res = await fetch(
-          `http://localhost:4000/api/appointments/doctor/${user._id}`
+          `http://localhost:4000/api/appointments/doctor/${user?._id}`
         );
         const data = await res.json();
         setAppointments(data);
@@ -436,37 +601,68 @@ export default function DoctorDashboard() {
     fetchAppointments();
   }, [user]);
 
-const handleCancelAppointment = async (appointmentId) => {
-  try {
-    const response = await fetch(
-      "http://localhost:4000/api/appointments/cancel",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ appointmentId }),
+  // 🔔 Real-time appointment notification using Socket.io
+  useEffect(() => {
+    if (!user?._id) return;
+
+    const socket = io("http://localhost:4000");
+    console.log("🔌 Connecting to socket server...");
+
+    socket.emit("register", user._id);
+    console.log("🧾 Registered doctor with socket:", user._id);
+
+    socket.on("new-appointment", (data) => {
+      console.log("📬 New appointment received via socket:", data);
+      toast(data.message);
+      setAppointments((prev) => [...prev, data.appointment]);
+      setNotifications((prev) => [
+        ...prev,
+        { message: data.message, data: data.appointment, time: new Date() },
+      ]);
+    });
+
+    return () => {
+      console.log("🔌 Socket disconnected.");
+      socket.disconnect();
+    };
+  }, [user?._id]);
+
+  const handleCancelAppointment = async (appointmentId) => {
+    try {
+      const response = await fetch(
+        "http://localhost:4000/api/appointments/cancel",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ appointmentId }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to cancel appointment");
       }
-    );
 
-    if (!response.ok) {
-      throw new Error("Failed to cancel appointment");
+      const result = await response.json();
+      console.log("Appointment cancelled:", result);
+
+      // Optional: Refresh appointments list after cancel
+      setAppointments((prev) =>
+        prev.map((app) =>
+          app._id === appointmentId ? { ...app, status: "Cancelled" } : app
+        )
+      );
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
     }
+  };
 
-    const result = await response.json();
-    console.log("Appointment cancelled:", result);
-
-    // Optional: Refresh appointments list after cancel
-    setAppointments((prev) =>
-      prev.map((app) =>
-        app._id === appointmentId ? { ...app, status: "Cancelled" } : app
-      )
-    );
-  } catch (error) {
-    console.error("Error cancelling appointment:", error);
-  }
-};
-
+  const handleClearNotification = (index) => {
+    const updatedNotifications = [...notifications];
+    updatedNotifications.splice(index, 1);
+    setNotifications(updatedNotifications);
+  };
 
   if (loading) {
     return (
@@ -487,8 +683,113 @@ const handleCancelAppointment = async (appointmentId) => {
   const calendarDays = generateCalendarDays();
   const weekdays = getWeekdays();
 
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#dff3f3]">
+        <p className="text-gray-500">Loading user data...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen p-6 space-y-6 text-sm">
+      {/* 🔔 Enhanced Notification Bell Icon */}
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Doctor Dashboard</h1>
+        <div className="relative">
+          <button
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative p-2 rounded-full bg-white shadow-md hover:bg-[#dff3f3] transition-all duration-300"
+            aria-label="Notifications"
+          >
+            {notifications.length > 0 ? (
+              <BellAlertIcon className="w-6 h-6 text-teal-600" />
+            ) : (
+              <BellIcon className="w-6 h-6 text-teal-600" />
+            )}
+            {notifications.length > 0 && (
+              <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full ring-2 ring-white">
+                {notifications.length}
+              </span>
+            )}
+          </button>
+
+          {showNotifications && (
+            <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-lg z-50 overflow-hidden transition-all duration-300 transform origin-top-right">
+              <div className="px-4 py-3 bg-gradient-to-r from-teal-50 to-[#dff3f3] border-b border-teal-100 rounded-t-2xl">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-teal-800 font-semibold">Notifications</h3>
+                  {notifications.length > 0 && (
+                    <button
+                      onClick={() => setNotifications([])}
+                      className="text-xs flex items-center text-teal-600 hover:text-red-500 transition-colors"
+                    >
+                      <TrashIcon className="w-4 h-4 mr-1" />
+                      Clear All
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-teal-200 scrollbar-track-gray-50">
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center text-gray-500 flex flex-col items-center">
+                    <BellIcon className="w-10 h-10 text-gray-300 mb-2" />
+                    <p className="text-sm">No new notifications</p>
+                  </div>
+                ) : (
+                  notifications
+                    .slice()
+                    .reverse()
+                    .map((notif, index) => (
+                      <div
+                        key={index}
+                        className="relative p-4 border-b border-gray-100 hover:bg-[#f5fdfd] transition-colors group"
+                      >
+                        <div className="flex items-start">
+                          <div className="mr-3 mt-1 flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center">
+                              <CalendarDaysIcon className="w-4 h-4 text-teal-600" />
+                            </div>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-700 font-medium break-words">
+                              {notif.message}
+                            </p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              {formatRelativeTime(notif.time)}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() =>
+                              handleClearNotification(
+                                notifications.length - 1 - index
+                              )
+                            }
+                            className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-4 top-4 text-gray-400 hover:text-red-500"
+                          >
+                            <XCircleIcon className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                )}
+              </div>
+
+              <div className="p-2 bg-gradient-to-r from-[#dff3f3] to-teal-50 rounded-b-2xl">
+                <button
+                  onClick={() => setShowNotifications(false)}
+                  className="w-full py-2 rounded-xl text-xs font-medium text-teal-600 hover:bg-white transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Profile Section and the rest of your component remains the same */}
       {/* Profile */}
       <div className="bg-white shadow-md rounded-2xl p-6 flex flex-col lg:flex-row items-center gap-6">
         <div className="relative">
@@ -507,7 +808,7 @@ const handleCancelAppointment = async (appointmentId) => {
         </div>
 
         <div className="text-center lg:text-left flex-1 space-y-1">
-          <h2 className="text-xl font-bold text-gray-800">{user.fullName}</h2>
+          <h2 className="text-xl font-bold text-gray-800">{user?.fullName}</h2>
           <p className="text-teal-600 font-medium">{user.specialization}</p>
           <p className="text-gray-500 text-sm">Speaks: English, Nepali</p>
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
@@ -585,7 +886,7 @@ const handleCancelAppointment = async (appointmentId) => {
                   <div className="text-sm">
                     <p className="text-gray-400 text-xs">Time</p>
                     <p className="font-medium text-gray-700">
-                      {app.appointmentTime}
+                      {/* {app.appointmentTime || "No time"} */}
                     </p>
                   </div>
 

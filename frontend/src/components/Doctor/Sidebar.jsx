@@ -3,14 +3,27 @@ import { NavLink } from "react-router-dom";
 import { UserRound, Users, Stethoscope, Home } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../../context/UserContext";
+import { useNavigate } from "react-router-dom";
+import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
+import { toast } from "react-toastify";
+
 
 function Sidebar() {
 
-  const { user , loading } = useContext(AuthContext);
+  const { user , loading , logoutUser} = useContext(AuthContext);
   if (loading) 
   {
     <p>Loading</p>
   }
+
+   const navigate = useNavigate();
+
+   const handleLogout = () => {
+     logoutUser();
+     navigate("/login");
+     toast.success("Logged out successfully");
+     console.log("Logging out...");
+   };
 
   return (
     <aside className="w-64 bg-white shadow-lg h-screen flex flex-col">
@@ -60,13 +73,22 @@ function Sidebar() {
 
       <div className="p-6 border-t border-gray-200">
         <div className="flex items-center gap-4">
-          <img src={user?.profilePic} className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold">
-            
-          </img>
+          <img
+            src={user?.profilePic}
+            className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold"
+          ></img>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">{user.fullName}</p>
-            <p className="text-xs text-gray-500 truncate">{user.email}</p>
+            <p className="text-sm font-medium text-gray-900 truncate">
+              {user?.fullName}
+            </p>
+            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
           </div>
+          <button
+            onClick={handleLogout}
+            className="text-gray-500 hover:text-primary"
+          >
+            <ArrowRightOnRectangleIcon className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </aside>

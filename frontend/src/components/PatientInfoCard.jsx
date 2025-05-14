@@ -7,101 +7,63 @@ import {
   UserGroupIcon,
   IdentificationIcon,
   BeakerIcon, // <-- REPLACES DropletIcon
+  UserCircleIcon,
+  BellIcon,
 } from "@heroicons/react/24/solid";
 
 import { useContext } from "react";
 import { AuthContext } from "../context/UserContext";
+import {useNavigate} from "react-router-dom";
 
 
 const PatientInfoCard = () => {
-
-    const {user , loading} = useContext(AuthContext);
-
-      if (loading) return <div className="p-4">Loading...</div>;
-      if (!user) return <div className="p-4">No user data found.</div>;
-
-  return (
-    <div className="bg-[#ffffff] p-6 rounded-xl shadow-sm flex justify-between items-center mb-8">
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-8 items-center flex-wrap">
-          <div className="flex items-center gap-2">
-            <div className="bg-[#dff3f3] p-3 rounded-full">
-              <UserIcon className="h-5 w-5 text-teal-700" />
-            </div>
-            <div>
-              <p className="font-semibold">{user.fullName}</p>
-              <p className="text-xs text-gray-500">Name</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="bg-[#dff3f3] p-3 rounded-full">
-              <UserGroupIcon className="h-5 w-5 text-teal-700" />
-            </div>
-            <div>
-              <p className="font-semibold">{user.gender}</p>
-              <p className="text-xs text-gray-500">Gender</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="bg-[#dff3f3] p-3 rounded-full">
-              <ArrowTrendingUpIcon className="h-5 w-5 text-teal-700" />
-            </div>
-            <div>
-              <p className="font-semibold">24</p>
-              <p className="text-xs text-gray-500">Age</p>
+    
+  const { user, loading } = useContext(AuthContext);
+  const navigate = useNavigate();
+  console.log("Profile Picture:", user?.profilePicture);
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-sm mb-8 border border-gray-100">
+        <div className="flex items-center">
+        {user?.profilePic ? (
+          <img
+            src={user.profilePic}
+            alt="Profile"
+            className="h-20 w-20 rounded-full object-cover"></img>):
+         ( <div className="bg-teal-100 rounded-full p-3">
+            <UserCircleIcon className="h-10 w-10 text-teal-600" />
+          </div>)
+        }
+          <div className="ml-4">
+            <h2 className="text-xl font-semibold text-gray-800">
+              {user?.fullName || "John Doe"}
+            </h2>
+            <div className="flex flex-wrap gap-4 mt-1">
+              <p className="text-sm text-gray-500">
+                <span className="font-medium text-gray-600">Age:</span>{" "}
+                {user?.age || "35"} years
+              </p>
+              <p className="text-sm text-gray-500">
+                <span className="font-medium text-gray-600">gender:</span>{" "}
+                {user?.gender}
+              </p>
+              <p className="text-sm text-gray-500">
+                <span className="font-medium text-gray-600">Patient ID:</span>{" "}
+                {user?._id?.substring(0, 8) || "P-12345"}
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="bg-[#dff3f3] p-3 rounded-full">
-              <BeakerIcon className="h-5 w-5 text-teal-700" />
-            </div>
-            <div>
-              <p className="font-semibold">O+</p>
-              <p className="text-xs text-gray-500">Blood Type</p>
-            </div>
+          <div className="ml-auto flex gap-2">
+           
+            <button
+              onClick={() => navigate("/patient/settings")}
+              className="px-4 py-2 text-sm font-medium text-teal-700 bg-teal-50 rounded-lg hover:bg-teal-100 transition-colors"
+            >
+              Edit Profile
+            </button>
           </div>
         </div>
-
-        {/* <div className="flex gap-6 items-center flex-wrap">
-          <div className="flex items-center gap-2">
-            <div className="bg-[#dff3f3] p-2 rounded-full">
-              <IdentificationIcon className="h-4 w-4 text-teal-700" />
-            </div>
-            <p className="text-sm text-gray-700">
-              Consulting Doctor:{" "}
-              <span className="text-teal-600 font-medium">Dr. Elina</span>
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="bg-[#dff3f3] p-2 rounded-full">
-              <BuildingOfficeIcon className="h-4 w-4 text-teal-700" />
-            </div>
-            <p className="text-sm text-gray-700">
-              Recent Visit:{" "}
-              <span className="text-teal-600 font-medium">22/01/2025</span>
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="bg-[#dff3f3] p-2 rounded-full">
-              <CalendarIcon className="h-4 w-4 text-teal-700" />
-            </div>
-            <p className="text-sm text-gray-700">
-              Upcoming Visit:{" "}
-              <span className="text-teal-600 font-medium">08/02/2025</span>
-            </p>
-          </div>
-        </div> */}
       </div>
-
-      <div>
-        <img
-          src={user.profilePic}
-          alt="profile"
-          className="w-20 h-20 rounded-full object-cover"
-        />
-      </div>
-    </div>
-  );
-};
+    );
+  };
 
 export default PatientInfoCard;
