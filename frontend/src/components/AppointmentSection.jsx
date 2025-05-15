@@ -63,7 +63,7 @@ const AppointmentSection = () => {
         </p>
         <p className="text-gray-500 mb-4">No upcoming appointments</p>
         <button
-          onClick={() => navigate("/find-doctors")}
+          onClick={() => navigate("/patient/find-doctors")}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-teal bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
         >
           Book Now
@@ -78,12 +78,7 @@ const AppointmentSection = () => {
         <h2 className="text-xl font-semibold text-gray-800">
           Upcoming Appointments
         </h2>
-        <button
-          onClick={() => navigate("/find-doctors")}
-          className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
-        >
-          <PlusIcon className="w-4 h-4 mr-1" /> Book Appointment
-        </button>
+     
       </div>
 
       <div className="space-y-4">

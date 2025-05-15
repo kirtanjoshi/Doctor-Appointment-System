@@ -208,10 +208,10 @@ const Dashboard = () => {
   return (
     <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
       
- <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Patient Dashboard</h1>
         <button
-          onClick={() => navigate("/find-doctors")}
+          onClick={() => navigate("/patient/find-doctors")}
           className="inline-flex items-center px-4 py-2 text-sm font-medium text-teal-800 bg-primary rounded-lg shadow hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
         >
           + Book Appointment

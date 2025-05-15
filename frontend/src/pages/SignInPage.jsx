@@ -272,9 +272,9 @@ const SignInPage = () => {
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeIcon className="h-5 w-5 text-gray-600" />
-                ) : (
                   <EyeSlashIcon className="h-5 w-5 text-gray-600" />
+                ) : (
+                  <EyeIcon className="h-5 w-5 text-gray-600" />
                 )}
               </button>
             </div>

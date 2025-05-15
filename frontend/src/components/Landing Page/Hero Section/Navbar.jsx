@@ -56,7 +56,7 @@ const Navbar = () => {
         <Button
           variant="signup"
           className="max-md:text-sm"
-          onClick={() => navigate("/signUp")}
+          onClick={() => navigate("/auth/signUp")}
         >
           Sign up
         </Button>

@@ -63,8 +63,7 @@ io.on('connection', (socket) => {
 app.set("io", io);
 app.set("connectedUsers", connectedUsers);
 
-// Middleware
-app.use(express.json());
+
 
 // CORS
 app.use(cors({
@@ -75,7 +74,8 @@ app.use(cors({
 }));
 
 
-
+// Middleware
+app.use(express.json());
 // Test route
 app.get('/', (req, res) => {
   res.send('Hello World!');

@@ -66,10 +66,11 @@ const AppointmentBooking = () => {
           },
           body: JSON.stringify({
             doctorId: doctor._id,
-            appointmentDate: selectedDate.toISOString(),
+            appointmentDate: selectedDate.toISOString().split("T")[0],
             appointmentTime: selectedTime,
             visitType,
             visitReason,
+            status: "Pending",
           }),
         }
       );
@@ -83,7 +84,8 @@ const AppointmentBooking = () => {
       }
       setIsModalOpen(true);
       console.log("Appointment booked successfully:", data);
-      navigate("patient/dashboard");
+      navigate("/patient/dashboard");
+      toast.success("Appointment booked successfully!");
     } catch (err) {
       console.error("Error booking appointment:", err);
     }
