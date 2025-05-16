@@ -9,6 +9,7 @@ router.get('/',  controller.getPatientAppointments);
 
 // Route to cancel an appointment
 router.post('/cancel', authMiddleware, controller.cancelAppointment);
+router.post('/completed', authMiddleware, controller.completedAppointment);
 
 router.get('/patient/:patientId',  controller.getPatientAppointmentsById);
 router.get('/doctor/:doctorId',  controller.getDoctorAppointmentsById);

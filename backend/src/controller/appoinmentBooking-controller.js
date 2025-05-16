@@ -26,7 +26,7 @@ const bookAppointment = async (req, res) => {
       doctorId,
       appointmentDate,
       appointmentTime,
-      status: { $ne: "cancelled" },
+      status,
     });
 
     if (existingAppointment) {
@@ -47,14 +47,14 @@ const bookAppointment = async (req, res) => {
     await newBooking.save();
 
     // Real-time notification to doctor via socket
-    const io = req.app.get("io");
-    const connectedUsers = req.app.get("connectedUsers");
-    const doctorSocketId = connectedUsers.get(doctorId);
+        const io = req.app.get("io");
+        const connectedUsers = req.app.get("connectedUsers");
+        const doctorSocketId = connectedUsers.get(doctorId);
 
     if (doctorSocketId) {
    const populatedBooking = await newBooking.populate("patientId doctorId");
 
-io.to(doctorSocketId).emit("new-appointment", {
+    io.to(doctorSocketId).emit("new-appointment", {
   message: "📅 New appointment booked by a patient.",
   appointment: populatedBooking,
 });
@@ -78,28 +78,83 @@ io.to(doctorSocketId).emit("new-appointment", {
 
 // Function to cancel an appointment
 const cancelAppointment = async (req, res) => {
-    try {
-        const { bookingId } = req.body;
+  try {
+    const { bookingId } = req.body;
 
-        // Find the booking
-        const booking = await BookingModel.findById(bookingId);
-        if (!booking) {
-            return res.status(404).json({ msg: 'Booking not found' });
-        }
+    // Find the booking
+    const booking = await BookingModel.findById(bookingId).populate("patientId doctorId");
 
-        // Update the booking status to 'cancelled'
-        booking.status = 'cancelled';
-        await booking.save();
-
-        // Notify doctor and patient about the cancellation
-        const Patient = await Patient.findById(booking.patientId);
-        const doctor = await Doctor.findById(booking.doctorId);
-        res.status(200).json({ msg: 'Appointment cancelled successfully' });
-    } catch (error) {
-        console.error("Error cancelling appointment:", error);
-        res.status(500).json({ error: error.message });
+    if (!booking) {
+      return res.status(404).json({ msg: "Booking not found" });
     }
+
+    // Update status
+    booking.status = "Cancelled";
+    await booking.save();
+
+    // Notify doctor via socket
+    const io = req.app.get("io");
+    const connectedUsers = req.app.get("connectedUsers");
+    const doctorSocketId = connectedUsers.get(booking.doctorId._id.toString());
+
+    if (doctorSocketId) {
+      io.to(doctorSocketId).emit("appointment-cancelled", {
+        message: "❌ Canceled appointment booked by a patient.",
+        appointment: booking,
+      });
+      console.log("📡 Emitted cancel to:", doctorSocketId);
+    }
+
+    return res.status(200).json({
+      message: "Appointment cancelled successfully",
+      booking,
+    });
+  } catch (error) {
+    console.error("Error cancelling appointment:", error);
+    res.status(500).json({ error: error.message });
+  }
 };
+
+const completedAppointment = async (req, res) => {
+  try {
+    const { bookingId } = req.body;
+
+    // Find the booking
+    const booking = await BookingModel.findById(bookingId).populate("patientId doctorId");
+
+    if (!booking) {
+      return res.status(404).json({ msg: "Booking not found" });
+    }
+
+    // Update status
+    booking.status = "Completed";
+    await booking.save();
+
+    // // Notify doctor via socket
+    // const io = req.app.get("io");
+    // const connectedUsers = req.app.get("connectedUsers");
+    // const doctorSocketId = connectedUsers.get(booking.doctorId._id.toString());
+
+    // if (doctorSocketId) {
+    //   io.to(doctorSocketId).emit("appointment-completed", {
+    //     message: "❌ Canceled appointment booked by a patient.",
+    //     appointment: booking,
+    //   });
+    //   console.log("📡 Emitted cancel to:", doctorSocketId);
+    // }
+
+    return res.status(200).json({
+      message: "Appointment completed ",
+      booking,
+    });
+  } catch (error) {
+    console.error("Error compeleting appointment:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
 
 // Function to reschedule an appointment
 const rescheduleAppointment = async (req, res) => {
@@ -206,5 +261,6 @@ module.exports = {
     getPatientAppointmentsById,
     getPatientAppointments,
     getDoctorAppointmentsById,
+    completedAppointment
 
 };

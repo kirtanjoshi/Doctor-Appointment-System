@@ -10,6 +10,8 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 
+import { toast } from "react-toastify";
+
 import { useContext } from "react";
 import { AuthContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -84,8 +86,9 @@ const AppointmentBooking = () => {
       }
       setIsModalOpen(true);
       console.log("Appointment booked successfully:", data);
-      navigate("/patient/dashboard");
+      
       toast.success("Appointment booked successfully!");
+      navigate("/patient/dashboard");
     } catch (err) {
       console.error("Error booking appointment:", err);
     }

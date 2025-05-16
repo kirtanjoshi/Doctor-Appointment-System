@@ -4,22 +4,20 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/UserContext";
 import {
-
   DocumentTextIcon,
   ChatBubbleLeftIcon,
   DocumentIcon,
-
   UserCircleIcon,
   PlusIcon,
   BellIcon,
 } from "@heroicons/react/24/outline";
 
-
 const AppointmentSection = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } =  useContext(AuthContext);  // Use useContext properly
-  const navigate = useNavigate(); // Initialize navigate
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRecentAppointments = async () => {
@@ -50,6 +48,49 @@ const AppointmentSection = () => {
     }
   }, [user]);
 
+const handleCancel = async (appointmentId) => {
+  if (!appointmentId) return;
+
+  setCancelLoading(true);
+  try {
+    const token = localStorage.getItem("token"); // or get it from context if stored there
+
+    const response = await fetch(
+      "http://localhost:4000/api/appointments/cancel",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ send the token here
+        },
+        body: JSON.stringify({ bookingId: appointmentId }),
+      }
+    );
+
+    console.log(appointmentId);
+
+    if (!response.ok) {
+      throw new Error("Failed to cancel appointment");
+    }
+
+    const result = await response.json();
+
+    // Update local state
+    setAppointments((prevAppointments) =>
+      prevAppointments.map((app) =>
+        app._id === appointmentId ? { ...app, status: "Cancelled" } : app
+      )
+    );
+
+    alert(result.message || "Appointment cancelled successfully");
+  } catch (error) {
+    console.error("Error cancelling appointment:", error);
+    alert("Failed to cancel appointment. Please try again.");
+  } finally {
+    setCancelLoading(false);
+  }
+};
+
   if (loading) {
     return <div className="py-6 text-center text-gray-500">Loading...</div>;
   }
@@ -64,7 +105,7 @@ const AppointmentSection = () => {
         <p className="text-gray-500 mb-4">No upcoming appointments</p>
         <button
           onClick={() => navigate("/patient/find-doctors")}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-teal bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
         >
           Book Now
         </button>
@@ -78,13 +119,12 @@ const AppointmentSection = () => {
         <h2 className="text-xl font-semibold text-gray-800">
           Upcoming Appointments
         </h2>
-     
       </div>
 
       <div className="space-y-4">
         {appointments.map((appointment) => (
           <div
-            key={appointment.id}
+            key={appointment._id}
             className="flex items-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
           >
             <div className="flex-shrink-0">
@@ -108,7 +148,7 @@ const AppointmentSection = () => {
                 <span>{appointment.appointmentTime}</span>
               </div>
             </div>
-            <div className="ml-4">
+            <div className="ml-4 flex flex-col items-end">
               <span
                 className={`px-3 py-1 rounded-full text-xs font-medium ${
                   appointment.status === "Confirmed"
@@ -120,6 +160,31 @@ const AppointmentSection = () => {
               >
                 {appointment.status}
               </span>
+
+              {(appointment.status === "Confirmed" ||
+                appointment.status === "Pending") && (
+                <button
+                  onClick={() => handleCancel(appointment._id)}
+                  disabled={cancelLoading}
+                  className="mt-2 flex items-center text-sm text-red-600 hover:text-red-800 font-medium focus:outline-none"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-4 h-4 mr-1"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                  {cancelLoading ? "Cancelling..." : "Cancel"}
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -127,7 +192,5 @@ const AppointmentSection = () => {
     </div>
   );
 };
-
- 
 
 export default AppointmentSection;
