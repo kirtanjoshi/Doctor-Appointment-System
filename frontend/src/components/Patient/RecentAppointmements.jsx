@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { CalendarIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import { AuthContext } from "../context/UserContext";
+import { AuthContext } from "../../context/UserContext";
 
 const RecentAppointments = () => {
   const [appointments, setAppointments] = useState([]);

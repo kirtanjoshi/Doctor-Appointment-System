@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { CalendarIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { useContext } from "react";
-import { AuthContext } from "../context/UserContext";
+import { AuthContext } from "../../context/UserContext";
 const RecentAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -4,10 +4,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import { AuthContext } from "../context/UserContext";
-import AppointmentSection from "../components/AppointmentSection"
-import RecentAppointments from "../components/RecentAppointmements";
-import PatientInfoCard from "../components/PatientInfoCard";
+import { AuthContext } from "../../context/UserContext";
+import AppointmentSection from "../../components/Patient/AppointmentSection"
+import RecentAppointments from "../../components/Patient/RecentAppointmements";
+import PatientInfoCard from "../../components/Patient/PatientInfoCard";
 
 // Icons
 import {

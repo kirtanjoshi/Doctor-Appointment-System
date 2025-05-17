@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 
 import { useContext } from "react";
-import { AuthContext } from "../context/UserContext";
+import { AuthContext } from "../../context/UserContext";
 import { 
   HomeIcon, 
   CalendarIcon, 

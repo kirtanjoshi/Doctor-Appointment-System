@@ -1,20 +1,21 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Dashboard from "./pages/Dashboard";
-import FindDoctors from "./pages/FindDoctors";
-import LandingPage from "./pages/LandingPage";
-import Login from "./pages/SignInPage";
-import SignUpPage from "./pages/SignUpPage";
-import DoctorDetails from "./pages/DoctorDetails";
+import Dashboard from "./pages/Patient/Dashboard";
+import FindDoctors from "./pages/Patient/FindDoctors";
+
+import LandingPage from "./pages/Patient/LandingPage";
+import Login from "./pages/Auth/SignInPage";
+import SignUpPage from "./pages/Auth/SignUpPage";
+// import DoctorDetails from "./pages/DoctorDetails";
 import UserProvider from "./context/UserContext";
-import AppointmentBooking from "./pages/AppointmentBooking";
-import Settings from "./pages/Setting";
+import AppointmentBooking from "./pages/Patient/AppointmentBooking";
+import Settings from "./pages/Patient/Setting";
 import Layout from "./components/Admin/Layout";
 import Doctors from "./pages/Admin/Doctors";
 import Patients from "./pages/Admin/Patients";
 import DoctorEdit from "./pages/Admin/DoctorEdit";
 import PatientEdit from "./pages/Admin/PatientEdit";
-import AppLayout from "./pages/AppLayout";
+import AppLayout from "./pages/Patient/AppLayout";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

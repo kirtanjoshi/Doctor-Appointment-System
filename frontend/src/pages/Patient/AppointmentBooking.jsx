@@ -13,7 +13,7 @@ import {
 import { toast } from "react-toastify";
 
 import { useContext } from "react";
-import { AuthContext } from "../context/UserContext";
+import { AuthContext } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 const AppointmentBooking = () => {
