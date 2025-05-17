@@ -30,7 +30,7 @@ const bookAppointment = async (req, res) => {
     });
 
     if (existingAppointment) {
-      return res.status(400).json({ msg: "The doctor is already booked at this time" });
+      return res.json({ msg: "The doctor is already booked at this time" });
     }
 
     // Create booking

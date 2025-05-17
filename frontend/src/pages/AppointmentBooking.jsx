@@ -88,7 +88,7 @@ const AppointmentBooking = () => {
       console.log("Appointment booked successfully:", data);
       
       toast.success("Appointment booked successfully!");
-      navigate("/patient/dashboard");
+      
     } catch (err) {
       console.error("Error booking appointment:", err);
     }
@@ -457,7 +457,8 @@ const AppointmentBooking = () => {
                     <button
                       type="button"
                       className="w-full inline-flex justify-center rounded-md border border-transparent bg-teal-500 px-4 py-2 text-xs sm:text-sm font-medium text-white hover:bg-teal-600"
-                      onClick={() => setIsModalOpen(false)}
+                      onClick={() => {setIsModalOpen(false)
+                      navigate("/patient/dashboard")}}
                     >
                       Done
                     </button>

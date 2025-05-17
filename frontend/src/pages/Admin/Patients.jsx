@@ -5,7 +5,6 @@ import { EditButton, DeleteButton } from "../../components/Admin/EditButton";
 import { DeleteModal } from "../../components/Admin/Deletemodel";
 
 function Patients() {
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [patients, setPatients] = useState([]);
@@ -87,8 +86,6 @@ function Patients() {
               <th className="p-3 border-b">Email</th>
               <th className="p-3 border-b">Phone</th>
               <th className="p-3 border-b">Gender</th>
-          
-              <th className="p-3 border-b">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -106,17 +103,7 @@ function Patients() {
                   <td className="p-3">{patient.phone}</td>
                   <td className="p-3 capitalize">{patient.gender}</td>
        
-                  <td className="p-3 flex gap-2">
-                    <EditButton
-                      onClick={() => navigate(`/patients/${patient.id}`)}
-                    />
-                    <DeleteButton
-                      onClick={() => {
-                        setPatientToDelete(patient);
-                        setShowDeleteModal(true);
-                      }}
-                    />
-                  </td>
+                
                 </tr>
               ))
             ) : (

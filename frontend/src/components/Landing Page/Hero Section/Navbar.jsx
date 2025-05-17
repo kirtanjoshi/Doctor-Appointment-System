@@ -16,7 +16,7 @@ const Navbar = () => {
           alt="MedEase Logo"
           className="object-contain shrink-0 self-stretch my-auto w-8 aspect-square"
         />
-        <span className="self-stretch my-auto">MedCare</span>
+        <span className="self-stretch my-auto">MediCare</span>
       </a>
 
       <div className="flex gap-10 self-stretch my-auto leading-relaxed text-zinc-700 max-md:gap-6 max-md:flex-wrap max-md:justify-center">

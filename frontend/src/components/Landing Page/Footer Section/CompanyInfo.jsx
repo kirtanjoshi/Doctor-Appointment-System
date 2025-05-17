@@ -14,10 +14,10 @@ const CompanyInfo = () => {
             alt="MedEase Logo"
             className="object-contain shrink-0 self-stretch my-auto w-8 aspect-square"
           />
-          <span className="self-stretch my-auto">MedCare</span>
+          <span className="self-stretch my-auto">MediCare</span>
         </a>
         <p className="mt-6 text-base tracking-tight leading-7 text-stone-300 max-md:max-w-full">
-          MedEase simplifies healthcare with an easy-to-use platform for booking
+          MediCare simplifies healthcare with an easy-to-use platform for booking
           appointments, telehealth services, and managing patient records.
         </p>
       </div>

@@ -160,32 +160,34 @@ const handleCancel = async (appointmentId) => {
               >
                 {appointment.status}
               </span>
-
-              {(appointment.status === "Confirmed" ||
-                appointment.status === "Pending") && (
-                <button
-                  onClick={() => handleCancel(appointment._id)}
-                  disabled={cancelLoading}
-                  className="mt-2 flex items-center text-sm text-red-600 hover:text-red-800 font-medium focus:outline-none"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-4 h-4 mr-1"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  {cancelLoading ? "Cancelling..." : "Cancel"}
-                </button>
-              )}
             </div>
+            <div className="ml-4 flex items-center">
+              
+            {(appointment.status === "Confirmed" ||
+              appointment.status === "Pending") && (
+              <button
+                onClick={() => handleCancel(appointment._id)}
+                disabled={cancelLoading}
+                className="mt-0 flex items-center text-sm text-red-600 hover:text-red-800 font-medium focus:outline-none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4 mr-1"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+                {cancelLoading ? "Cancelling..." : "Cancel"}
+              </button>
+            )}
+              </div>
           </div>
         ))}
       </div>

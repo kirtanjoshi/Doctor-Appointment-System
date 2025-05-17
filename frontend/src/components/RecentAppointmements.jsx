@@ -3,14 +3,6 @@ import { CalendarIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/UserContext";
-import {
-  DocumentTextIcon,
-  ChatBubbleLeftIcon,
-  DocumentIcon,
-  UserCircleIcon,
-  PlusIcon,
-  BellIcon,
-} from "@heroicons/react/24/outline";
 
 const RecentAppointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -70,57 +62,53 @@ const RecentAppointments = () => {
 
   return (
     <div className="space-y-4">
-          {
-                      appointments
-                  .filter((appointment) => appointment.status != "Pending") == 0 ? (
-                  <div className="text-center text-gray-500 py-4">
-    No completed or cancelled appointments yet.
-  </div>      
-        ):
-              
-              
-              
-              
-      appointments
-        .filter((appointment) => appointment.status != "Pending")
+      {appointments.filter((appointment) => appointment.status != "Pending") ==
+      0 ? (
+        <div className="text-center text-gray-500 py-4">
+          No completed or cancelled appointments yet.
+        </div>
+      ) : (
+        appointments
+          .filter((appointment) => appointment.status != "Pending")
 
-        .map((appointment) => (
-          <div
-            key={appointment._id}
-            className="flex items-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
-          >
-            <div className="flex-shrink-0 w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-              <span className="text-teal-800 font-medium">
-                {appointment.doctorInitials}
-              </span>
-            </div>
-            <div className="ml-4 flex-grow">
-              <p className="font-medium text-gray-900">
-                {appointment.doctorName}
-              </p>
-              <p className="text-sm text-gray-600">{appointment.specialty}</p>
-              <div className="flex items-center mt-1 text-sm text-gray-500">
-                <CalendarIcon className="w-4 h-4 mr-1" />
-                <span className="mr-3">{appointment.date}</span>
-                <ClockIcon className="w-4 h-4 mr-1" />
-                <span>{appointment.time}</span>
+          .map((appointment) => (
+            <div
+              key={appointment._id}
+              className="flex items-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+            >
+              <img src={appointment.doctorId.profilePic} className="flex-shrink-0 w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+                
+              </img>
+              <div className="ml-4 flex-grow">
+                <p className="font-medium text-gray-900">
+                  {appointment.doctorId.fullName}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {appointment.doctorId.specialization}
+                </p>
+                <div className="flex items-center mt-1 text-sm text-gray-500">
+                  <CalendarIcon className="w-4 h-4 mr-1" />
+                  <span className="mr-3">{appointment.appointmentDate}</span>
+                  <ClockIcon className="w-4 h-4 mr-1" />
+                  <span>{appointment.time}</span>
+                </div>
+              </div>
+              <div className="ml-4">
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    appointment.status === "Completed"
+                      ? "bg-green-100 text-green-800"
+                      : appointment.status === "Cancelled"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-blue-100 text-blue-800"
+                  }`}
+                >
+                  {appointment.status}
+                </span>
               </div>
             </div>
-            <div className="ml-4">
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  appointment.status === "Completed"
-                    ? "bg-green-100 text-green-800"
-                    : appointment.status === "Cancelled"
-                    ? "bg-red-100 text-red-800"
-                    : "bg-blue-100 text-blue-800"
-                }`}
-              >
-                {appointment.status}
-              </span>
-            </div>
-          </div>
-        ))}
+          ))
+      )}
     </div>
   );
 };

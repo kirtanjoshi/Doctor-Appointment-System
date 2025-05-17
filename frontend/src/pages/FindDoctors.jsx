@@ -82,33 +82,17 @@ const navigate = useNavigate();
             >
               <div className="p-6">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="bg-white text-center font-bold text-teal-800 rounded-full w-14 h-14 flex items-center justify-center text-lg shadow-sm">
-                    {doctor.fullName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase()}
-                  </div>
+                  <img src={doctor.profilePic} className="bg-white text-center font-bold text-teal-800 rounded-full w-14 h-14 flex items-center justify-center text-lg shadow-sm">
+                 
+                  </img>
                   <div>
                     <h3 className="text-lg font-semibold">{doctor.fullName}</h3>
                     <p className="text-teal-800 font-medium">
                       {doctor.specialization}
                     </p>
-                    <div className="flex items-center text-sm text-gray-600 mt-1">
-                      <svg
-                        className="w-4 h-4 mr-1 text-gray-500"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 2.75-2.88 7.19-5 9.88C9.88 16.19 7 11.75 7 9z" />
-                        <circle cx="12" cy="9" r="2.5" />
-                      </svg>
-                      {doctor.address || "N/A"}
-                    </div>
+                   
                   </div>
-                  <div className="ml-auto text-sm text-green-600 font-semibold">
-                    ⭐ {doctor.rating || "4.9"}
-                  </div>
+                
                 </div>
                 <div className="text-sm text-gray-700 space-y-1">
                   <p>🗓 {doctor.experience}+ years experience</p>

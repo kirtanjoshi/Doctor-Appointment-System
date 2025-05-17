@@ -17,7 +17,7 @@ const SignUpPage = () => {
             alt="MedEase Logo"
             className="object-contain shrink-0 self-stretch my-auto w-8 aspect-square"
           />
-          <span className=" my-auto select-none">MedCare</span>
+          <span className=" my-auto select-none">MediCare</span>
         </a>
       </div>
       <SignPatient />
