@@ -46,29 +46,7 @@ function Sidebar() {
           <Home className="h-5 w-5" />
           <span>Dashboard</span>
         </NavLink>
-        <NavLink
-          to="doctors"
-          className={({ isActive }) =>
-            `flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-700 hover:bg-teal-50 hover:text-teal-700 ${
-              isActive ? "bg-teal-100 text-teal-700 font-semibold" : ""
-            }`
-          }
-        >
-          <UserRound className="h-5 w-5" />
-          <span>Doctors</span>
-        </NavLink>
-
-        <NavLink
-          to="patients"
-          className={({ isActive }) =>
-            `flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-700 hover:bg-teal-50 hover:text-teal-700 ${
-              isActive ? "bg-teal-100 text-teal-700 font-semibold" : ""
-            }`
-          }
-        >
-          <Users className="h-5 w-5" />
-          <span>Patients</span>
-        </NavLink>
+      
       </nav>
 
       <div className="p-6 border-t border-gray-200">

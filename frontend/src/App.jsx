@@ -54,41 +54,7 @@ function App() {
             <Route path="patients/:id" element={<PatientEdit />} /> */}
           </Route>
 
-          {/* <Route
-            path="/*"
-            element={
-              <div className="flex">
-                <Sidebar />
-                <main className="flex-1 ml-64 min-h-screen">
-                  <Routes>
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="find-doctors" element={<FindDoctors />} />
-                    <Route path="appointments" element={<div>Loading</div>} />
-                    <Route
-                      path="medical-records"
-                      element={
-                        <div className="p-8">Medical Records Content</div>
-                      }
-                    />
-                    <Route
-                      path="messages"
-                      element={<div className="p-8">Messages Content</div>}
-                    />
-                    <Route
-                      path="profile"
-                      element={<div className="p-8">Profile Content</div>}
-                    />
-                    <Route path="settings" element={<Settings />} />
-                    <Route
-                      path="/appointments/:id"
-                      element={<AppointmentBooking />}
-                    />
-                  </Routes>
-                </main>
-              </div>
-            }
-          /> */}
-
+        
           <Route path="/patient" element={<AppLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="find-doctors" element={<FindDoctors />} />

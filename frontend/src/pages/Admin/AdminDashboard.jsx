@@ -42,6 +42,30 @@ export default function AdminDashboard() {
        app?.doctorId?.fullName?.toLowerCase().includes(term)
      );
    });
+  
+  let patientIds = [];
+  for (let i = 0; i < appointments.length; i++) {
+    const patientId = appointments[i].patientId._id;
+    if (!patientIds.includes(patientId)) {
+      patientIds.push(patientId);
+    }
+  }
+
+const totalPatients = patientIds.length;
+  console.log("Total unique patients:", totalPatients);
+  
+  let doctorsId = [];
+  for (let i = 0; i < appointments.length; i++) {
+    const doctorId = appointments[i].doctorId._id;
+    if (!doctorsId.includes(doctorId)) {
+      doctorsId.push(doctorId);
+    }
+  }
+
+  const totalDoctors= doctorsId.length;
+  console.log("Total unique doctors:", totalDoctors);
+
+
 
   return (
     <div className="p-6 md:p-8 space-y-8  min-h-screen">
@@ -56,12 +80,12 @@ export default function AdminDashboard() {
           {
             icon: <UserGroupIcon className="h-6 w-6 text-teal-500" />,
             label: "Doctors",
-            value: 660,
+            value: totalDoctors,
           },
           {
             icon: <UserGroupIcon className="h-6 w-6 text-teal-500" />,
             label: "Patients",
-            value: 660,
+            value: totalPatients,
           },
           {
             icon: <CalendarDaysIcon className="h-6 w-6 text-indigo-500" />,
