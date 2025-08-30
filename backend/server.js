@@ -150,10 +150,10 @@ const io = new Server(server, {
 // CORS for regular HTTP requests
 app.use(cors({
   origin: [
+    'https://doctor-appointment-system-jcbu5emem-kirtanjoshis-projects.vercel.app',
     'http://127.0.0.1:5500', 
     'http://localhost:5173', 
     'http://localhost:5175',
-    'https://your-frontend-app.netlify.app' // Add your Netlify URL
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],

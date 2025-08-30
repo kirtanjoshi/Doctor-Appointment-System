@@ -9,7 +9,7 @@ const Home = () => {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        return alert("No token found. Please login.");
+        return alert("No token found. Please login");
       }
 
       try {
