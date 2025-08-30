@@ -49,7 +49,7 @@ const handleRegister = async (e) => {
 
   try {
     setLoading(true); 
-    const res = await fetch("http://localhost:4000/api/auth/patient/register", {
+    const res = await fetch(`${API_BASE_URL}/auth/patient/register`, {
       method: "POST",
       body: formData, // no Content-Type header; browser sets it with boundary
     });

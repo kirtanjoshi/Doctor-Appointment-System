@@ -55,7 +55,7 @@ function Settings() {
       }
 
       const res = await fetch(
-        `http://localhost:4000/api/patient/update/${user._id}`,
+        `${API_BASE_URL}/patient/update/${user._id}`,
         {
           method: "PUT",
           body: formDataToSend,
@@ -108,13 +108,10 @@ function Settings() {
       }
 
       try {
-        const res = await fetch(
-          `http://localhost:4000/api/patient/update/${user._id}`,
-          {
-            method: "PUT",
-            body: formDataToSend,
-          }
-        );
+        const res = await fetch(`${API_BASE_URL}/patient/update/${user._id}`, {
+          method: "PUT",
+          body: formDataToSend,
+        });
         const data = await res.json();
 
         if (res.ok) {

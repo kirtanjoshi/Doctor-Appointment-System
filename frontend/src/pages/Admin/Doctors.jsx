@@ -65,7 +65,7 @@ function Doctors() {
   
     const fetchDoctors = async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/doctors");
+        const res = await fetch(`${API_BASE_URL}/doctors`);
         const data = await res.json();
         setDoctors(data);
       } catch (err) {
@@ -144,12 +144,9 @@ function Doctors() {
 
   const handleDeleteDoctor = async (id) => {
     try {
-      const res = await fetch(
-        `http://localhost:4000/api/doctors/delete/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`${API_BASE_URL}/doctors/delete/${id}`, {
+        method: "DELETE",
+      });
       if (res.ok) {
         alert("Doctor deleted successfully");
         // setShowDeleteModal(false);
@@ -193,7 +190,7 @@ const handleAddDoctor = async (e) => {
   }
 
   try {
-    const res = await fetch("http://localhost:4000/api/auth/doctor/register", {
+    const res = await fetch(`${API_BASE_URL}/auth/doctor/register`, {
       method: "POST",
       body: formData,
     });

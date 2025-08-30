@@ -13,7 +13,7 @@ const Home = () => {
       }
 
       try {
-        const res = await fetch("http://localhost:4000/api/protected/dashboard", {
+        const res = await fetch(`${API_BASE_URL}/protected/dashboard`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

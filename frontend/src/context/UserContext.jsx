@@ -21,7 +21,7 @@ const UserProvider = ({ children }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:4000/api/protected/${storedRole}/dashboard`,
+        `${API_BASE_URL}/protected/${storedRole}/dashboard`,
         {
           headers: {
             "Content-Type": "application/json",

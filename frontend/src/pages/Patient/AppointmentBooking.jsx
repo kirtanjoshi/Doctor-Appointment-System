@@ -32,7 +32,7 @@ const AppointmentBooking = () => {
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/doctors/${id}`);
+        const res = await fetch(`${API_BASE_URL}/doctors/${id}`);
         const data = await res.json();
         setDoctor(data);
       } catch (err) {
@@ -58,24 +58,21 @@ const AppointmentBooking = () => {
     console.log(visitReason);
 
     try {
-      const response = await fetch(
-        "http://localhost:4000/api/appointments/book",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            doctorId: doctor._id,
-            appointmentDate: selectedDate.toISOString().split("T")[0],
-            appointmentTime: selectedTime,
-            visitType,
-            visitReason,
-            status: "Pending",
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/appointments/book`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          doctorId: doctor._id,
+          appointmentDate: selectedDate.toISOString().split("T")[0],
+          appointmentTime: selectedTime,
+          visitType,
+          visitReason,
+          status: "Pending",
+        }),
+      });
       console.log(response);
 
       const data = await response.json();

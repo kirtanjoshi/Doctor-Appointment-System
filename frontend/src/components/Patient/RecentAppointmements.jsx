@@ -14,7 +14,7 @@ const RecentAppointments = () => {
     const fetchRecentAppointments = async () => {
       try {
         const response = await fetch(
-          `http://localhost:4000/api/appointments/patient/${user._id}`
+          `${API_BASE_URL}/appointments/patient/${user._id}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch recent appointments");

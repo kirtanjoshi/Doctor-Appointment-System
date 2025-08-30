@@ -23,7 +23,7 @@ const AppointmentSection = () => {
     const fetchRecentAppointments = async () => {
       try {
         const response = await fetch(
-          `http://localhost:4000/api/appointments/patient/${user._id}`
+          `http://${API_BASE_URL}/appointments/patient/${user._id}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch recent appointments");
@@ -55,17 +55,14 @@ const handleCancel = async (appointmentId) => {
   try {
     const token = localStorage.getItem("token"); // or get it from context if stored there
 
-    const response = await fetch(
-      "http://localhost:4000/api/appointments/cancel",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ send the token here
-        },
-        body: JSON.stringify({ bookingId: appointmentId }),
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/appointments/cancel`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // ✅ send the token here
+      },
+      body: JSON.stringify({ bookingId: appointmentId }),
+    });
 
     console.log(appointmentId);
 

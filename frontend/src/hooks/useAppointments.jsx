@@ -9,7 +9,7 @@ const useAppointments = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/appointments");
+        const response = await fetch(`${API_BASE_URL}/api/appointments`);
         const data = await response.json();
         setPatients(data);
         setLoading(false);

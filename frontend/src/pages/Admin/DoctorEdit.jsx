@@ -33,7 +33,7 @@ function DoctorEdit() {
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/doctors/${id}`);
+        const res = await fetch(`${API_BASE_URL}/doctors/${id}`);
         const data = await res.json();
         setDoctor(data);
         setAvailability(data.availability || []);
@@ -109,13 +109,10 @@ function DoctorEdit() {
     if (profilePic) formData.append("profilePic", profilePic);
 
     try {
-      const res = await fetch(
-        `http://localhost:4000/api/doctors/update/${id}`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
+      const res = await fetch(`${API_BASE_URL}/doctors/update/${id}`, {
+        method: "PUT",
+        body: formData,
+      });
 
       if (res.ok) {
         alert("Doctor updated successfully");

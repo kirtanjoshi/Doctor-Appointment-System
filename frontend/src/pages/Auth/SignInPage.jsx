@@ -17,7 +17,7 @@ const SignInPage = () => {
     e.preventDefault();
     setErrorMessage(""); // Clear previous error
 
-    const endpoint = `http://localhost:4000/api/auth/${accountType}/login`;
+    const endpoint = `${API_BASE_URL}/auth/${accountType}/login`;
 
     try {
       const response = await fetch(endpoint, {

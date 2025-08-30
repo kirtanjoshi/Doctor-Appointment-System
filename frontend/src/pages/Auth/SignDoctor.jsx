@@ -107,13 +107,10 @@ const SignDoctor = () => {
     }
 
     try {
-      const response = await fetch(
-        "http://localhost:4000/api/auth/doctor/register",
-        {
-          method: "POST",
-          body: formData, // Send FormData instead of JSON
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/auth/doctor/register`, {
+        method: "POST",
+        body: formData, // Send FormData instead of JSON
+      });
 
       const data = await response.json();
       console.log(data);
@@ -146,17 +143,14 @@ const SignDoctor = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/auth/doctor/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: form.email,
-            password: form.password,
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/api/auth/doctor/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+        }),
+      });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Login failed");

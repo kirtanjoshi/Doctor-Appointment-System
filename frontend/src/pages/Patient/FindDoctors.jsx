@@ -12,7 +12,7 @@ const navigate = useNavigate();
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/doctors");
+        const response = await fetch(`${API_BASE_URL}/doctors`);
         const data = await response.json();
         setDoctors(Array.isArray(data) ? data : data.doctors);
       } catch (error) {

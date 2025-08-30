@@ -25,7 +25,7 @@ function Patients() {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/patients");
+        const response = await fetch(`${API_BASE_URL}/patients`);
         const data = await response.json();
         setPatients(data);
       } catch (error) {

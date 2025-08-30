@@ -11,9 +11,7 @@ function PatientEdit() {
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:4000/api/patients/${id}`
-        );
+        const response = await fetch(`${API_BASE_URL}/api/patients/${id}`);
         const data = await response.json();
         setPatient(data);
         setLoading(false);
@@ -35,7 +33,7 @@ function PatientEdit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:4000/api/patients/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/patients/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
