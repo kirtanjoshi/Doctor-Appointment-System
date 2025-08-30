@@ -51,7 +51,7 @@ const Navbar = () => {
           to="/login"
           className="my-auto rotate-[2.4492937051703357e-16rad] text-zinc-700 hover:text-blue-500 transition-colors duration-200 cursor-pointer max-md:text-sm"
         >
-          Log in.
+          Log in
         </Link>
         <Button
           variant="signup"
