@@ -16,7 +16,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
-
+import API_BASE_URL from "../../config/api";
 // Utility Components
 function StatCard({ icon, value, label }) {
   return (

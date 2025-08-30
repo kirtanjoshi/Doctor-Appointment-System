@@ -1,7 +1,7 @@
 // pages/DoctorDetails.jsx
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-
+import API_BASE_URL from "../../config/api";
 const DoctorDetails = () => {
   const { id } = useParams();
   const [doctor, setDoctor] = useState(null);

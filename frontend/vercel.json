@@ -1,4 +1,8 @@
-"rewrites": [ { "
-source
-"destinatio
-: " / index. html"
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import { CalendarIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/UserContext";
-
+import API_BASE_URL from "../../config/api";
 const RecentAppointments = () => {
   const [appointments, setAppointments] = useState([]);
 

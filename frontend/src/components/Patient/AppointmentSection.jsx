@@ -11,6 +11,7 @@ import {
   PlusIcon,
   BellIcon,
 } from "@heroicons/react/24/outline";
+import API_BASE_URL from "../../config/api";
 
 const AppointmentSection = () => {
   const [appointments, setAppointments] = useState([]);

@@ -1,6 +1,6 @@
 // src/hooks/usepatients.js
 import { useState, useEffect } from "react";
-
+import API_BASE_URL from "../config/api";
 const useAppointments = () => {
   const [appointments, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);

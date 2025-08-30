@@ -4,7 +4,7 @@ import { Plus, Search, X } from "lucide-react";
 import { EditButton, DeleteButton } from "../../components/Admin/EditButton";
 import { DeleteModal } from "../../components/Admin/Deletemodel";
 import { FaUpload } from "react-icons/fa";
-
+import API_BASE_URL from "../../config/api";
 function Doctors() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");

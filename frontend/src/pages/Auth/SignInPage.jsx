@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/UserContext";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"; // Requires Heroicons
-
+import API_BASE_URL from "../../config/api";
 const SignInPage = () => {
   const [accountType, setAccountType] = useState("patient");
   const [email, setEmail] = useState("");

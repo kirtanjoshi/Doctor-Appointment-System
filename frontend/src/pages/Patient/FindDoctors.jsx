@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-
+import API_BASE_URL from "../../config/api";
 // Inside FindDoctors component
 
 const FindDoctors = () => {

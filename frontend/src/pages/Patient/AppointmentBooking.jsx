@@ -9,7 +9,7 @@ import {
   ChevronRightIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
-
+import API_BASE_URL from "../../config/api";
 import { toast } from "react-toastify";
 
 import { useContext } from "react";

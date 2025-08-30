@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import API_BASE_URL from "../../config/api";
 const Home = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);

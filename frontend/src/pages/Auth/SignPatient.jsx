@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaUpload } from "react-icons/fa";
 import imageCompression from "browser-image-compression";
-
+import API_BASE_URL from "../../config/api";
 const SignPatient = () => {
   const [fullName, setFullname] = useState("");
   const [username, setUsername] = useState("");

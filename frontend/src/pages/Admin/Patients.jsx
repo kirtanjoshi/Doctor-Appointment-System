@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, Search, X } from "lucide-react";
 import { EditButton, DeleteButton } from "../../components/Admin/EditButton";
 import { DeleteModal } from "../../components/Admin/Deletemodel";
-
+import API_BASE_URL from "../../config/api";
 function Patients() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);

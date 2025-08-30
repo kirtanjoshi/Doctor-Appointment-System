@@ -7,7 +7,7 @@ import { AuthContext } from "../../context/UserContext";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-
+import API_BASE_URL from "../../config/api";
 function Settings() {
   const { user, setUser } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("account");
